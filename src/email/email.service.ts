@@ -17,6 +17,7 @@ export class EmailService {
       },
     });
   }
+  // send email confirmation
   async sendResetEmail(email: VerifyUserDto, user: User, resetLink: string) {
     await this.mailerService.sendMail({
       to: email.email,
