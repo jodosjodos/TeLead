@@ -111,8 +111,6 @@ export class UserService {
     });
     return updatedUser;
   }
-
-  // get all user
   findAll() {
     return `This action returns all user`;
   }
