@@ -15,6 +15,31 @@ enum Gender {
   FEMALE
 }
 
+enum CATEGORY {
+  THREED_DESIGN
+  GRAPHIC_DESIGN
+  WEB_DEVELOPMENT
+  SEO_MARKETING
+  FINANCE_ACCOUNTING
+  PERSONAL_DEVELOPMENT
+  OFFICE_PRODUCTIVITY
+  HR_MANAGEMENT
+}
+
+enum LEVELS {
+  ALL_LEVELS
+  BEGINNERS
+  INTERMEDIATE
+  EXPERT
+}
+
+enum FEATURES {
+  ALL_CAPTION
+  QUIZZES
+  CODING_EXERCISES
+  PRATICE_TEST
+}
+
 model User {
   id          String   @id @default(uuid())
   email       String   @unique
@@ -29,4 +54,19 @@ model User {
   gender      Gender
 
   @@map("users")
+}
+// not migrated already
+model Course {
+  id         String   @id @default(uuid())
+  courseName String
+  category   CATEGORY
+  mentor     String
+  rating     String
+  price      String
+  LEVEL      LEVELS
+  DURATION   String
+  features   FEATURES
+  description String
+  bookmarked Boolean @default(false)
+  
 }
