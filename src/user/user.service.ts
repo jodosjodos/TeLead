@@ -20,7 +20,7 @@ import { EmailService } from 'src/email/email.service';
 @Injectable()
 export class UserService {
   // aws configuration
-
+  //TODO:internet suggestion
   AWS_S3_BUCKET = 'TeLead';
   s3 = new AWS.S3({
     endpoint: 's3.us-east-005.backblazeb2.com',
