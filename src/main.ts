@@ -12,6 +12,7 @@ async function bootstrap() {
   await app.listen(4000, () => {
     console.log('your app is no port 4000');
   });
+  // swagger configuration
   const config = new DocumentBuilder()
     .setTitle('TeLead API')
     .setDescription('e-learning back-end  apis')
