@@ -3,6 +3,7 @@ import { v2 as cloudinary } from 'cloudinary';
 import * as streamifier from 'streamifier';
 import { CloudinaryResponse } from './dto/cloudinary.response';
 @Injectable()
+// cloudinary services
 export class CloudinaryService {
   async uploadFile(
     file: Express.Multer.File,
@@ -16,6 +17,8 @@ export class CloudinaryService {
           resolve(result);
         },
       );
+
+      //   convert file to buffer
       streamifier.createReadStream(file.buffer).pipe(uploadStream);
     });
   }

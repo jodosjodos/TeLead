@@ -194,13 +194,13 @@ export class UserService {
 
   async uploadProfile(file: Express.Multer.File, user: User) {
     try {
+      // upload
       const uploadResult = await this.cloudinaryService.uploadFile(
         file,
         user.email.replace('@gmail.com', ''),
       );
 
-      console.log('Successfully uploaded:', uploadResult);
-
+      // updated profile
       const updatedUser = await this.prismaService.user.update({
         where: {
           id: user.id,
