@@ -3,9 +3,9 @@ import {
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { CreateChapterDto, CreateCourseDto } from './dto';
+import { CreateChapterDto, CreateCourseDto, FilterDto } from './dto';
 import { DatabaseService } from 'src/database/database.service';
-import { User } from '@prisma/client';
+import { Course, User } from '@prisma/client';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Injectable()
@@ -95,7 +95,7 @@ export class CourseService {
   }
 
   // get sorted course
-  async getCourses(user: User) {
+  async getCourses(user: User): Promise<Course[]> {
     try {
       const sortedRes = await this.prisma.course.findMany({
         where: {
@@ -112,6 +112,32 @@ export class CourseService {
         throw new BadRequestException('No course created by that mentor');
       }
       return sortedRes;
+    } catch (err) {
+      throw new InternalServerErrorException(err);
+    }
+  }
+
+  // get courses filtered
+  async filteredCourse(user: User, dto: FilterDto) {
+    //  features must more than 1
+    try {
+      const filteredCourses = await this.prisma.course.findMany({
+        where: {
+          mentorEmail: user.email,
+          category: dto.category,
+          LEVEL: dto.level,
+          paid: dto.payType,
+          features: { hasSome: dto.features },
+        },
+      });
+
+      if (filteredCourses.length === 0) {
+        throw new BadRequestException(
+          'unmatched course or no course created by that mentor ',
+        );
+      }
+
+      return filteredCourses;
     } catch (err) {
       throw new InternalServerErrorException(err);
     }

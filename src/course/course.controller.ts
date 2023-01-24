@@ -5,6 +5,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -13,9 +14,9 @@ import { Roles } from 'src/decorator/mentor.decorator';
 import { JwtGuard } from 'src/guard';
 import { MentorGuard } from 'src/guard/mentor.guard';
 import { CourseService } from './course.service';
-import { CreateChapterDto, CreateCourseDto } from './dto';
+import { CreateChapterDto, CreateCourseDto, FilterDto } from './dto';
 import { GetUser } from 'src/decorator';
-import { User } from '@prisma/client';
+import { Course, User } from '@prisma/client';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('course')
@@ -48,7 +49,18 @@ export class CourseController {
   @UseGuards(JwtGuard, MentorGuard)
   @Roles('MENTOR')
   @Get('/all')
-  getAllCourses(@GetUser() user: User) {
+  getAllCourses(@GetUser() user: User): Promise<Course[]> {
     return this.service.getCourses(user);
+  }
+
+  // filter
+  // features in filter must be included and must be greater than one
+  @UseGuards(JwtGuard)
+  @Get('/filter')
+  getFilteredCourse(
+    @GetUser() user: User,
+    @Query() dto: FilterDto,
+  ): Promise<Course[]> {
+    return this.service.filteredCourse(user, dto);
   }
 }
