@@ -1,6 +1,6 @@
 # 🎓 TeLead
 
-Welcome to **TeLead** - An advanced e-learning platform designed to facilitate seamless learning experiences. TeLead offers a plethora of features to empower learners and educators alike, with a focus on interactivity, personalization, and collaboration.
+Welcome to **TeLead** - An advanced e-learning platform designed to facilitate seamless learning experiences. 🚀💡TeLead offers a plethora of features to empower learners and educators alike, with a focus on interactivity, personalization, and collaboration.  TeLead 📚🎓 provides innovative tools for both students and instructors, fostering engagement and creativity. Join us today and unlock the possibilities! 👨‍🏫🌟👩‍🎓
 
 ## 🌟 Features
 
