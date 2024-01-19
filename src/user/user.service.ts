@@ -3,10 +3,14 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { DatabaseService } from 'src/database/database.service';
 import { Gender } from '@prisma/client';
+import { EmailService } from 'src/email/email.service';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prismaService: DatabaseService) {}
+  constructor(
+    private readonly prismaService: DatabaseService,
+    private readonly emailService: EmailService,
+  ) {}
   async create(createUserDto: CreateUserDto) {
     const user = await this.prismaService.user.findUnique({
       where: { email: createUserDto.email },
@@ -16,6 +20,8 @@ export class UserService {
         'user with this email already exists , please login',
       );
 
+    const confirmUrl = 'http://localhost:4000/api/v1/users/confirm/';
+    await this.emailService.sendEmail(confirmUrl, createUserDto);
     const savedUser = await this.prismaService.user.create({
       data: {
         email: createUserDto.email,

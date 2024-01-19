@@ -9,6 +9,8 @@ async function bootstrap() {
   const { httpAdapter } = app.get(HttpAdapterHost);
   app.useGlobalFilters(new AllExceptionFilter(httpAdapter));
   app.setGlobalPrefix('api/v1');
-  await app.listen(4000);
+  await app.listen(4000, () => {
+    console.log('your app is no port 4000');
+  });
 }
 bootstrap();
