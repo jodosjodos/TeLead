@@ -8,28 +8,47 @@ import {
   Delete,
   HttpCode,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { JwtGuard } from 'src/guard';
+import { GetUser } from 'src/decorator';
+import { User } from '@prisma/client';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly service: UserService) {}
 
+  // register
   @Post('/create')
   create(@Body() createUserDto: CreateUserDto) {
     return this.service.create(createUserDto);
   }
+
+  // login
   @HttpCode(HttpStatus.OK)
   @Post('/login')
   login(@Body() loginUserDto: CreateUserDto) {
     return this.service.login(loginUserDto);
   }
 
+  // verify account
   @Patch('verify/:id')
   verifyUser(@Param('id') id: string) {
     return this.service.verifyUser(id);
+  }
+
+  // fillProfile
+  @UseGuards(JwtGuard)
+  @Patch('update/:id')
+  update(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+    @GetUser() user: User,
+  ) {
+    return this.service.update(id, updateUserDto, user);
   }
 
   @Get()
@@ -40,11 +59,6 @@ export class UserController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.service.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.service.update(+id, updateUserDto);
   }
 
   @Delete('delete /:id')

@@ -37,7 +37,7 @@ export class AllExceptionFilter extends BaseExceptionFilter {
       myResponseObject.response = exception.message.replaceAll(/\n/g, '');
     } else {
       myResponseObject.statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-      myResponseObject.response = 'INTERNAL_SERVER_ERROR';
+      myResponseObject.response = exception.message;
     }
     response.status(myResponseObject.statusCode).json(myResponseObject);
     this.logger.error(myResponseObject.response, AllExceptionFilter.name);

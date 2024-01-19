@@ -1,8 +1,12 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { DatabaseService } from 'src/database/database.service';
-import { Gender } from '@prisma/client';
+import { Gender, User } from '@prisma/client';
 import { EmailService } from 'src/email/email.service';
 import * as argon2 from 'argon2';
 import { generateToken } from 'src/util/jwtutil';
@@ -61,13 +65,20 @@ export class UserService {
         isVerified: true,
       },
     });
-    return verifiedUser;
+    console.log(verifiedUser);
+
+    return {
+      msg: ' you have verified your email now you can use your account',
+    };
   }
 
+  // login user
   async login(createUserDto: CreateUserDto) {
     const user = await this.prismaService.user.findUnique({
       where: { email: createUserDto.email },
     });
+    if (!user.isVerified)
+      throw new UnauthorizedException('please verify your account');
     if (!user) throw new BadRequestException('Invalid credentials');
     const isPasswordEqual = await argon2.verify(
       user.password,
@@ -79,18 +90,32 @@ export class UserService {
     return { user: { ...user }, token };
   }
 
+  //  fill profile
+  async update(id: string, updateUserDto: UpdateUserDto, user: User) {
+    const savedUser = await this.prismaService.user.findUnique({
+      where: { id },
+    });
+    if (!savedUser) throw new BadRequestException('please provide valid id');
+    if (id !== user.id) throw new BadRequestException(' that is not your id ');
+    const updatedUser = await this.prismaService.user.update({
+      where: { id, email: user.email },
+      data: {
+        fullName: updateUserDto.fullName,
+        nickName: updateUserDto.nickName,
+        dateOfBirth: updateUserDto.dateOfBirth,
+        phoneNumber: updateUserDto.phoneNumber,
+        gender: updateUserDto.gender,
+      },
+    });
+    return updatedUser;
+  }
+
   findAll() {
     return `This action returns all user`;
   }
 
   findOne(id: number) {
     return `This action returns a #${id} user`;
-  }
-
-  update(id: number, updateUserDto: UpdateUserDto) {
-    console.log(updateUserDto);
-
-    return `This action updates a #${id} user`;
   }
 
   async remove(id: string) {
