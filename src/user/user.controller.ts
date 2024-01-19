@@ -6,6 +6,8 @@ import {
   Patch,
   Param,
   Delete,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -15,9 +17,19 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UserController {
   constructor(private readonly service: UserService) {}
 
-  @Post()
+  @Post('/create')
   create(@Body() createUserDto: CreateUserDto) {
     return this.service.create(createUserDto);
+  }
+  @HttpCode(HttpStatus.OK)
+  @Post('/login')
+  login(@Body() loginUserDto: CreateUserDto) {
+    return this.service.login(loginUserDto);
+  }
+
+  @Patch('verify/:id')
+  verifyUser(@Param('id') id: string) {
+    return this.service.verifyUser(id);
   }
 
   @Get()
@@ -35,8 +47,8 @@ export class UserController {
     return this.service.update(+id, updateUserDto);
   }
 
-  @Delete(':id')
+  @Delete('delete /:id')
   remove(@Param('id') id: string) {
-    return this.service.remove(+id);
+    return this.service.remove(id);
   }
 }
