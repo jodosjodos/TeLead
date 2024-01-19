@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Welcome to TeLead</title>
+    <style>
+      body {
+        font-family: 'Arial', sans-serif;
+        line-height: 1.6;
+        color: #333;
+        margin: 0;
+        padding: 0;
+      }
+
+      p {
+        margin-bottom: 15px;
+      }
+
+      a {
+        text-decoration: none;
+        color: #007bff;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      .confirmation-button {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #4caf50;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <p>Hey <%= name %>,</p>
+
+    <p>
+      Thanks for signing up for TeLead. We're very excited to have you on
+      board. TeLead is  experienced best online platform 
+    </p>
+
+    <p>To get started using TeLead, please confirm your account below:</p>
+
+    <p>
+      <a href="<%= confirmation_url %>" class="confirmation-button">
+        Confirm your account
+      </a>
+    </p>
+
+    <p>
+      If you're having trouble clicking the confirm account button, copy and
+      paste the below URL into your web browser.
+    </p>
+
+    <p>
+      <a href="<%= confirmation_url %>"><%= confirmation_url %></a>
+    </p>
+  </body>
+</html>
