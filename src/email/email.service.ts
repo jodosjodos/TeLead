@@ -1,6 +1,5 @@
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
-import { User } from '@prisma/client';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 
 @Injectable()
@@ -13,7 +12,7 @@ export class EmailService {
       template: './welcome',
       context: {
         name: user.email,
-        confirmUrl,
+        confirmation_url: confirmUrl,
       },
     });
   }

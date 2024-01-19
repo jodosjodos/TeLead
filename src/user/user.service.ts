@@ -15,13 +15,19 @@ export class UserService {
     const user = await this.prismaService.user.findUnique({
       where: { email: createUserDto.email },
     });
+
+    //  check if user already exists
     if (user)
       throw new BadRequestException(
         'user with this email already exists , please login',
       );
 
-    const confirmUrl = 'http://localhost:4000/api/v1/users/confirm/';
-    await this.emailService.sendEmail(confirmUrl, createUserDto);
+    // don't send email
+    // const confirmUrl = 'http://localhost:4000/api/v1/users/confirm/';
+    // await this.emailService.sendEmail(confirmUrl, createUserDto);
+
+    // save user
+    const defaultDateOfBirth = new Date('2006-01-01T00:00:00Z');
     const savedUser = await this.prismaService.user.create({
       data: {
         email: createUserDto.email,
@@ -29,7 +35,7 @@ export class UserService {
         fullName: 'John Doe',
         phoneNumber: '+250727866254',
         nickName: 'John',
-        dateOfBirth: '',
+        dateOfBirth: defaultDateOfBirth,
         gender: Gender.MALE,
       },
     });
