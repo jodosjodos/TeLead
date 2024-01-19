@@ -22,10 +22,6 @@ export class UserService {
         'user with this email already exists , please login',
       );
 
-    // don't send email
-    // const confirmUrl = 'http://localhost:4000/api/v1/users/confirm/';
-    // await this.emailService.sendEmail(confirmUrl, createUserDto);
-
     // save user
     const defaultDateOfBirth = new Date('2006-01-01T00:00:00Z');
     const savedUser = await this.prismaService.user.create({
@@ -39,6 +35,10 @@ export class UserService {
         gender: Gender.MALE,
       },
     });
+
+    // don't send email
+    // await this.emailService.sendEmail(confirmUrl, createUserDto);
+    // const confirmUrl = `http://localhost:4000/api/v1/users/confirm/${savedUser.id}`;
     return savedUser;
   }
 
