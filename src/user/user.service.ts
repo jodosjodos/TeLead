@@ -42,6 +42,7 @@ export class UserService {
       },
     });
 
+    // send email for verify user
     const confirmUrl = `http://localhost:4000/api/v1/user/verify/${savedUser.id}/${savedUser.email}`;
     await this.emailService.sendEmail(confirmUrl, savedUser);
     return savedUser;
