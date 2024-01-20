@@ -3,20 +3,17 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { DatabaseService } from 'src/database/database.service';
 import { Gender, User } from '@prisma/client';
-import { EmailService } from 'src/email/email.service';
 import * as argon2 from 'argon2';
 import { generateToken } from 'src/util/jwtutil';
 import { ConfigService } from '@nestjs/config';
+import { CreateUserDto, UpdateUserDto, VerifyUserDto } from './dto';
 
 @Injectable()
 export class UserService {
   constructor(
     private readonly prismaService: DatabaseService,
-    private readonly emailService: EmailService,
     private readonly config: ConfigService,
   ) {}
   async create(createUserDto: CreateUserDto) {
@@ -46,15 +43,15 @@ export class UserService {
     });
 
     // don't send email
-    // await this.emailService.sendEmail(confirmUrl, createUserDto);
-    // const confirmUrl = `http://localhost:4000/api/v1/users/confirm/${savedUser.id}`;
     return savedUser;
   }
 
   // verify user profile
-  async verifyUser(id: string) {
-    const user = await this.prismaService.user.findUnique({ where: { id } });
-    if (!user) throw new BadRequestException('Invalid id');
+  async verifyUser(id: string, email: VerifyUserDto) {
+    const user = await this.prismaService.user.findUnique({
+      where: { id, email: email.email },
+    });
+    if (!user) throw new BadRequestException('non-match email  and id');
     if (user.isVerified)
       throw new BadRequestException(
         ' user with that id have been already verified',

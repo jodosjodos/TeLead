@@ -11,11 +11,10 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtGuard } from 'src/guard';
 import { GetUser } from 'src/decorator';
 import { User } from '@prisma/client';
+import { CreateUserDto, UpdateUserDto, VerifyUserDto } from './dto';
 
 @Controller('user')
 export class UserController {
@@ -36,8 +35,8 @@ export class UserController {
 
   // verify account
   @Patch('verify/:id')
-  verifyUser(@Param('id') id: string) {
-    return this.service.verifyUser(id);
+  verifyUser(@Param('id') id: string, @Body() email: VerifyUserDto) {
+    return this.service.verifyUser(id, email);
   }
 
   // fillProfile
