@@ -87,6 +87,7 @@ export class UserService {
     );
     if (!isPasswordEqual) throw new BadRequestException('invalid credentials');
 
+    // generate jwt token
     const token = await generateToken(user.email, user.id);
     return { user: { ...user }, token };
   }
