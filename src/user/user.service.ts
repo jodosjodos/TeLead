@@ -148,10 +148,13 @@ export class UserService {
     const user = await this.prismaService.user.findUnique({
       where: { id, email },
     });
+    //  check is user is truly him
     if (!user)
       throw new UnauthorizedException(
         'please provide valid id and email you have received on email',
       );
+
+    // check if passwords matches
     if (!(passwords.password === passwords.confirmPassword))
       throw new BadRequestException(' passwords are not match');
     const hashedPassword = await argon2.hash(passwords.password);
@@ -161,6 +164,8 @@ export class UserService {
         password: hashedPassword,
       },
     });
+
+    // respond
     return {
       msg: 'to reset your password have been successfully , now you can  login with that password',
       loginUrl: 'localhost:4000/api/v1/user/login',
