@@ -34,8 +34,8 @@ export class UserController {
   }
 
   // verify account
-  @Patch('verify/:id')
-  verifyUser(@Param('id') id: string, @Body() email: VerifyUserDto) {
+  @Get('verify/:id/:email')
+  verifyUser(@Param('id') id: string, @Param('email') email: string) {
     return this.service.verifyUser(id, email);
   }
 
@@ -50,17 +50,14 @@ export class UserController {
     return this.service.update(id, updateUserDto, user);
   }
 
-  @Get()
-  findAll() {
-    return this.service.findAll();
+  // reset password request
+  @Get('/reset')
+  resetPassword(@Body() email: VerifyUserDto) {
+    return this.service.resetPassword(email);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.service.findOne(+id);
-  }
-
-  @Delete('delete /:id')
+  // delete account
+  @Delete('delete/:id')
   remove(@Param('id') id: string) {
     return this.service.remove(id);
   }

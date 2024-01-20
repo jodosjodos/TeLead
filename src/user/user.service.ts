@@ -7,14 +7,14 @@ import { DatabaseService } from 'src/database/database.service';
 import { Gender, User } from '@prisma/client';
 import * as argon2 from 'argon2';
 import { generateToken } from 'src/util/jwtutil';
-import { ConfigService } from '@nestjs/config';
 import { CreateUserDto, UpdateUserDto, VerifyUserDto } from './dto';
+import { EmailService } from 'src/email/email.service';
 
 @Injectable()
 export class UserService {
   constructor(
     private readonly prismaService: DatabaseService,
-    private readonly config: ConfigService,
+    private readonly emailService: EmailService,
   ) {}
   async create(createUserDto: CreateUserDto) {
     const user = await this.prismaService.user.findUnique({
@@ -42,14 +42,15 @@ export class UserService {
       },
     });
 
-    // don't send email
+    const confirmUrl = `http://localhost:4000/api/v1/user/verify/${savedUser.id}/${savedUser.email}`;
+    await this.emailService.sendEmail(confirmUrl, savedUser);
     return savedUser;
   }
 
   // verify user profile
-  async verifyUser(id: string, email: VerifyUserDto) {
+  async verifyUser(id: string, email: string) {
     const user = await this.prismaService.user.findUnique({
-      where: { id, email: email.email },
+      where: { id, email },
     });
     if (!user) throw new BadRequestException('non-match email  and id');
     if (user.isVerified)
@@ -75,9 +76,10 @@ export class UserService {
     const user = await this.prismaService.user.findUnique({
       where: { email: createUserDto.email },
     });
+
+    if (!user) throw new BadRequestException(' no account with that email ');
     if (!user.isVerified)
       throw new UnauthorizedException('please verify your account');
-    if (!user) throw new BadRequestException('Invalid credentials');
     const isPasswordEqual = await argon2.verify(
       user.password,
       createUserDto.password,
@@ -108,12 +110,12 @@ export class UserService {
     });
     return updatedUser;
   }
-  findAll() {
-    return `This action returns all user`;
-  }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async resetPassword(email: VerifyUserDto) {
+    const user = await this.prismaService.user.findUnique({
+      where: { email: email.email },
+    });
+    if (!user) throw new BadRequestException(" user with email doesn't exists");
   }
 
   async remove(id: string) {

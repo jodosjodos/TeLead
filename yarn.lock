@@ -1424,7 +1424,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/ejs@npm:^3.1.5":
+"@types/ejs@npm:^3, @types/ejs@npm:^3.1.5":
   version: 3.1.5
   resolution: "@types/ejs@npm:3.1.5"
   checksum: 13d994cf0323d7e0ad33b9384914ccd3b4cd8bf282eced3649b1621b66ee7c784ac2d120a9d7b1f43d6f873518248fb8c3221b06a649b847860b9c2389a0b0ed
@@ -2046,6 +2046,7 @@ __metadata:
     "@nestjs/schematics": "npm:^10.0.0"
     "@nestjs/testing": "npm:^10.0.0"
     "@prisma/client": "npm:^5.8.1"
+    "@types/ejs": "npm:^3"
     "@types/express": "npm:^4.17.17"
     "@types/jest": "npm:^29.5.2"
     "@types/node": "npm:^20.3.1"
@@ -2064,7 +2065,6 @@ __metadata:
     eslint-config-prettier: "npm:^9.0.0"
     eslint-plugin-prettier: "npm:^5.0.0"
     jest: "npm:^29.5.0"
-    nodemailer: "npm:^6.9.8"
     passport: "npm:^0.7.0"
     passport-jwt: "npm:^4.0.1"
     prettier: "npm:^3.0.0"
@@ -7077,7 +7077,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nodemailer@npm:6.9.8, nodemailer@npm:^6.9.2, nodemailer@npm:^6.9.8":
+"nodemailer@npm:6.9.8, nodemailer@npm:^6.9.2":
   version: 6.9.8
   resolution: "nodemailer@npm:6.9.8"
   checksum: 9332587975240ac648e1295b1df15e339fcace3f7fab8af0382e7f2dd10e48296344dfa698d58f1667f220f7fe13c779d55d39144c9cd9ed6f5f559714183c75
