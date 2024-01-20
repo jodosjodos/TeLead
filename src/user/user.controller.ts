@@ -14,7 +14,12 @@ import { UserService } from './user.service';
 import { JwtGuard } from 'src/guard';
 import { GetUser } from 'src/decorator';
 import { User } from '@prisma/client';
-import { CreateUserDto, UpdateUserDto, VerifyUserDto } from './dto';
+import {
+  CreateUserDto,
+  ResetPasswordDTO,
+  UpdateUserDto,
+  VerifyUserDto,
+} from './dto';
 
 @Controller('user')
 export class UserController {
@@ -51,9 +56,19 @@ export class UserController {
   }
 
   // reset password request
-  @Get('/reset')
-  resetPassword(@Body() email: VerifyUserDto) {
-    return this.service.resetPassword(email);
+  @Get('/resetRequest/email')
+  resetPasswordRequest(@Body() email: VerifyUserDto) {
+    return this.service.resetPasswordRequest(email);
+  }
+
+  // process reset request
+  @Patch('/reset/email/:id/:email')
+  resetPassword(
+    @Param('email') email: string,
+    @Param('id') id: string,
+    @Body() passwords: ResetPasswordDTO,
+  ) {
+    return this.service.resetPasswordEmail(email, id, passwords);
   }
 
   // delete account

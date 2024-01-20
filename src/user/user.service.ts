@@ -7,7 +7,12 @@ import { DatabaseService } from 'src/database/database.service';
 import { Gender, User } from '@prisma/client';
 import * as argon2 from 'argon2';
 import { generateToken } from 'src/util/jwtutil';
-import { CreateUserDto, UpdateUserDto, VerifyUserDto } from './dto';
+import {
+  CreateUserDto,
+  ResetPasswordDTO,
+  UpdateUserDto,
+  VerifyUserDto,
+} from './dto';
 import { EmailService } from 'src/email/email.service';
 
 @Injectable()
@@ -112,11 +117,54 @@ export class UserService {
     return updatedUser;
   }
 
-  async resetPassword(email: VerifyUserDto) {
+  // send reset password request to email
+  async resetPasswordRequest(email: VerifyUserDto) {
     const user = await this.prismaService.user.findUnique({
       where: { email: email.email },
     });
     if (!user) throw new BadRequestException(" user with email doesn't exists");
+    if (
+      user.nickName == 'John' &&
+      user.fullName == 'John Doe' &&
+      user.phoneNumber == '+250727866254'
+    )
+      throw new UnauthorizedException('please update your  profile');
+    const resetLink = `http://localhost:4000/api/v1/user/reset/email/${user.id}/${user.email}`;
+
+    await this.emailService.sendResetEmail(email, user, resetLink);
+    return {
+      msg: ' you have requested to reset your password , please check your email',
+    };
+  }
+
+  // reset password by email
+  async resetPasswordEmail(
+    email: string,
+    id: string,
+    passwords: ResetPasswordDTO,
+  ) {
+    console.log(passwords);
+
+    const user = await this.prismaService.user.findUnique({
+      where: { id, email },
+    });
+    if (!user)
+      throw new UnauthorizedException(
+        'please provide valid id and email you have received on email',
+      );
+    if (!(passwords.password === passwords.confirmPassword))
+      throw new BadRequestException(' passwords are not match');
+    const hashedPassword = await argon2.hash(passwords.password);
+    await this.prismaService.user.update({
+      where: { id, email },
+      data: {
+        password: hashedPassword,
+      },
+    });
+    return {
+      msg: 'to reset your password have been successfully , now you can  login with that password',
+      loginUrl: 'localhost:4000/api/v1/user/login',
+    };
   }
 
   async remove(id: string) {
