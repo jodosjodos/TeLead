@@ -165,11 +165,7 @@ export class UserService {
       },
     });
 
-<<<<<<< HEAD
     // respond
-=======
-    // respond to user
->>>>>>> 1f6c4d8 (fix bugs)
     return {
       msg: 'to reset your password have been successfully , now you can  login with that password',
       loginUrl: 'localhost:4000/api/v1/user/login',
