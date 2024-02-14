@@ -1,0 +1,28 @@
+-- CreateEnum
+CREATE TYPE "CATEGORY" AS ENUM ('THREED_DESIGN', 'GRAPHIC_DESIGN', 'WEB_DEVELOPMENT', 'SEO_MARKETING', 'FINANCE_ACCOUNTING', 'PERSONAL_DEVELOPMENT', 'OFFICE_PRODUCTIVITY', 'HR_MANAGEMENT');
+
+-- CreateEnum
+CREATE TYPE "LEVELS" AS ENUM ('ALL_LEVELS', 'BEGINNERS', 'INTERMEDIATE', 'EXPERT');
+
+-- CreateEnum
+CREATE TYPE "FEATURES" AS ENUM ('ALL_CAPTION', 'QUIZZES', 'CODING_EXERCISES', 'PRATICE_TEST');
+
+-- AlterTable
+ALTER TABLE "users" ADD COLUMN     "profile" TEXT NOT NULL DEFAULT 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQGDvVMnDeGLpVz-3WeVLdCxiYCU3-4MKt1RaTS2t_YTA&s';
+
+-- CreateTable
+CREATE TABLE "Course" (
+    "id" TEXT NOT NULL,
+    "courseName" TEXT NOT NULL,
+    "category" "CATEGORY" NOT NULL,
+    "mentor" TEXT NOT NULL,
+    "rating" TEXT NOT NULL,
+    "price" TEXT NOT NULL,
+    "LEVEL" "LEVELS" NOT NULL,
+    "DURATION" TEXT NOT NULL,
+    "features" "FEATURES" NOT NULL,
+    "description" TEXT NOT NULL,
+    "bookmarked" BOOLEAN NOT NULL DEFAULT false,
+
+    CONSTRAINT "Course_pkey" PRIMARY KEY ("id")
+);

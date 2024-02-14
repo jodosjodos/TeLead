@@ -9,6 +9,9 @@ import {
   HttpCode,
   HttpStatus,
   UseGuards,
+  UseInterceptors,
+  UploadedFile,
+  ParseFilePipeBuilder,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { JwtGuard } from 'src/guard';
@@ -20,7 +23,10 @@ import {
   UpdateUserDto,
   VerifyUserDto,
 } from './dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('user')
 @Controller('user')
 export class UserController {
   constructor(private readonly service: UserService) {}
@@ -76,6 +82,26 @@ export class UserController {
   @UseGuards(JwtGuard)
   getAccountDetails(@GetUser() user: User, @Param('id') id: string) {
     return this.service.getAccountDetails(user, id);
+  }
+
+  //TODO:Not done yet
+  // upload profile
+  @Patch('/upload/profile')
+  @UseInterceptors(FileInterceptor('file'))
+  uploadProfile(
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+
+        .addMaxSizeValidator({
+          maxSize: 5532403,
+        })
+        .build({
+          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+        }),
+    )
+    file: Express.Multer.File,
+  ) {
+    console.log(file);
   }
 
   // delete account
