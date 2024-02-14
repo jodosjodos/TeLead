@@ -31,7 +31,6 @@ export class UserService {
     }),
     s3ForcePathStyle: true,
     useAccelerateEndpoint: true,
-    useDualstackEndpoint: true,
   });
 
   constructor(
