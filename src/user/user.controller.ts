@@ -71,6 +71,7 @@ export class UserController {
     return this.service.resetPasswordEmail(email, id, passwords);
   }
 
+  // account details
   @Get('/account/:id')
   @UseGuards(JwtGuard)
   getAccountDetails(@GetUser() user: User, @Param('id') id: string) {
