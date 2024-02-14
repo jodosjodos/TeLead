@@ -118,6 +118,7 @@ export class UserService {
         dateOfBirth: updateUserDto.dateOfBirth,
         phoneNumber: updateUserDto.phoneNumber,
         gender: updateUserDto.gender,
+        Role: updateUserDto.role,
       },
     });
     return updatedUser;

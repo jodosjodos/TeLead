@@ -16,7 +16,7 @@ enum Gender {
 }
 
 enum CATEGORY {
-  THREED_DESIGN
+  THREE_DESIGN
   GRAPHIC_DESIGN
   WEB_DEVELOPMENT
   SEO_MARKETING
@@ -37,37 +37,65 @@ enum FEATURES {
   ALL_CAPTION
   QUIZZES
   CODING_EXERCISES
-  PRATICE_TEST
+  PRACTICE_TEST
+}
+
+enum PRICE {
+  PAID
+  FREE
+}
+
+enum Role {
+  STUDENT
+  MENTOR
 }
 
 model User {
-  id          String   @id @default(uuid())
-  email       String   @unique
+  id          String    @id @default(uuid())
+  email       String    @unique
   password    String
   fullName    String
   nickName    String
+  Role        Role      @default(STUDENT)
   dateOfBirth DateTime
   phoneNumber String
-  isVerified  Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  profile     String @default("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQGDvVMnDeGLpVz-3WeVLdCxiYCU3-4MKt1RaTS2t_YTA&s")
+  isVerified  Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  profile     String    @default("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQGDvVMnDeGLpVz-3WeVLdCxiYCU3-4MKt1RaTS2t_YTA&s")
   gender      Gender
+  chapters    Chapter[]
+  chaptersId  String[]  @default([])
 
   @@map("users")
 }
+
 // not migrated already
 model Course {
-  id         String   @id @default(uuid())
-  courseName String
-  category   CATEGORY
-  mentor     String
-  rating     String
-  price      String
-  LEVEL      LEVELS
-  DURATION   String
-  features   FEATURES
+  id          String    @id @default(uuid())
+  courseName  String
+  category    CATEGORY
+  mentor      String
+  rating      String
+  paid        PRICE
+  price       String
+  LEVEL       LEVELS
+  DURATION    String
+  features    FEATURES[]
   description String
-  bookmarked Boolean @default(false)
-  
+  chapters    Chapter[]
+
+  @@map("courses")
+}
+
+model Chapter {
+  id       Int     @id @default(autoincrement())
+  desc     String
+  url      String
+  Course   Course? @relation(fields: [courseId], references: [id])
+  courseId String?
+  User     User?   @relation(fields: [userId], references: [id])
+  userId   String?
+
+  @@map("chapters")
 }

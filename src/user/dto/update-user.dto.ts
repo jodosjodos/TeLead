@@ -16,4 +16,7 @@ export class UpdateUserDto {
   phoneNumber: string;
   @IsNotEmpty()
   gender: 'MALE' | 'FEMALE';
+
+  @IsNotEmpty({ message: 'password role must be either MENTOR  or STUDENT' })
+  role: 'MENTOR' | 'STUDENT';
 }
