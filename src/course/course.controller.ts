@@ -5,7 +5,6 @@ import { MentorGuard } from 'src/guard/mentor.guard';
 
 @Controller('course')
 export class CourseController {
-  //TODO:add middleware to check user role before reaching to this Controller
   @UseGuards(JwtGuard, MentorGuard)
   @Roles('MENTOR')
   @Post('/create')

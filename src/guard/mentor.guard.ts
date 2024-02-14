@@ -1,5 +1,11 @@
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class MentorGuard implements CanActivate {
@@ -7,14 +13,21 @@ export class MentorGuard implements CanActivate {
 
   canActivate(context: ExecutionContext): boolean {
     const roles = this.reflector.get<string[]>('roles', context.getHandler());
+    console.log(roles);
+
     if (!roles || !roles.includes('MENTOR')) {
-      return true; // No roles defined or not MENTOR role, allow access
+      throw new UnauthorizedException(
+        'please to access this route you must have MENTOR role',
+      );
     }
 
     const request = context.switchToHttp().getRequest();
-    const user = request.user;
-    console.log(user);
+    const user: User = request.user;
 
+    if (user.Role !== 'MENTOR')
+      throw new UnauthorizedException(
+        'please to access this route you must have MENTOR role',
+      );
     return user && user.Role === 'MENTOR';
   }
 }
