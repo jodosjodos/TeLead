@@ -71,6 +71,12 @@ export class UserController {
     return this.service.resetPasswordEmail(email, id, passwords);
   }
 
+  @Get('/account/:id')
+  @UseGuards(JwtGuard)
+  getAccountDetails(@GetUser() user: User, @Param('id') id: string) {
+    return this.service.getAccountDetails(user, id);
+  }
+
   // delete account
   @Delete('delete/:id')
   remove(@Param('id') id: string) {

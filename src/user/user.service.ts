@@ -17,6 +17,12 @@ import { EmailService } from 'src/email/email.service';
 
 @Injectable()
 export class UserService {
+  getAccountDetails(user: User, id: string) {
+    if (id == null) throw new BadRequestException('please provide your id');
+    if (id !== user.id) throw new BadRequestException(' that is not your id ');
+
+    return { user };
+  }
   constructor(
     private readonly prismaService: DatabaseService,
     private readonly emailService: EmailService,

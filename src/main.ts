@@ -9,8 +9,9 @@ async function bootstrap() {
   const { httpAdapter } = app.get(HttpAdapterHost);
   app.useGlobalFilters(new AllExceptionFilter(httpAdapter));
   app.setGlobalPrefix('api/v1');
-  await app.listen(4000, () => {
-    console.log('your app is no port 4000');
+  const port = 4000;
+  await app.listen(port, () => {
+    console.log(`your app is no port ${port}`);
   });
   // swagger configuration
   const config = new DocumentBuilder()
@@ -20,6 +21,6 @@ async function bootstrap() {
     .addTag('TeLead')
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('/swagger', app, document);
+  SwaggerModule.setup('api', app, document);
 }
 bootstrap();
