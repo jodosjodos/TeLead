@@ -1,11 +1,13 @@
 import {
   BadRequestException,
   Injectable,
+  InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import { Gender, User } from '@prisma/client';
 import * as argon2 from 'argon2';
+import * as AWS from 'aws-sdk';
 import { generateToken } from 'src/util/jwtutil';
 import {
   CreateUserDto,
@@ -17,12 +19,21 @@ import { EmailService } from 'src/email/email.service';
 
 @Injectable()
 export class UserService {
-  getAccountDetails(user: User, id: string) {
-    if (id == null) throw new BadRequestException('please provide your id');
-    if (id !== user.id) throw new BadRequestException(' that is not your id ');
+  // aws configuration
 
-    return { user };
-  }
+  AWS_S3_BUCKET = 'TeLead';
+  s3 = new AWS.S3({
+    endpoint: 's3.us-east-005.backblazeb2.com',
+    region: 'us-east-005',
+    credentials: new AWS.Credentials({
+      accessKeyId: process.env.KEY_ID,
+      secretAccessKey: process.env.SECRET_ACCESS_KEY,
+    }),
+    s3ForcePathStyle: true,
+    useAccelerateEndpoint: true,
+    useDualstackEndpoint: true,
+  });
+
   constructor(
     private readonly prismaService: DatabaseService,
     private readonly emailService: EmailService,
@@ -182,5 +193,61 @@ export class UserService {
   async remove(id: string) {
     const deletedUser = await this.prismaService.user.delete({ where: { id } });
     return deletedUser;
+  }
+
+  // get profile details
+  getAccountDetails(user: User, id: string) {
+    if (id == null) throw new BadRequestException('please provide your id');
+    if (id !== user.id) throw new BadRequestException(' that is not your id ');
+
+    return { user };
+  }
+
+  // upload profile
+  async uploadProfile(file: Express.Multer.File, user: User) {
+    const { originalname } = file;
+    //TODO:here
+    const uploadRes = await this.s3_upload(
+      file.buffer,
+      this.AWS_S3_BUCKET,
+      originalname,
+      file.mimetype,
+    );
+    const updatedUser = await this.prismaService.user.update({
+      where: {
+        id: user.id,
+        email: user.email,
+      },
+      data: {
+        profile: uploadRes.Location,
+      },
+    });
+    return updatedUser;
+  }
+
+  //TODO: not done yet
+  async s3_upload(
+    file: Buffer,
+    bucket: string,
+    name: string,
+    mimetype: string,
+  ) {
+    // console.log(typeof name);
+
+    // console.log(file.buffer, this.AWS_S3_BUCKET, name, mimetype);
+    const params = {
+      Bucket: bucket,
+      Key: String(name),
+      Body: file,
+      ContentType: mimetype,
+    };
+    try {
+      const s3Response = await this.s3.upload(params).promise();
+      return s3Response;
+    } catch (error) {
+      console.log(error);
+
+      throw new InternalServerErrorException(error);
+    }
   }
 }

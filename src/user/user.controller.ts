@@ -87,6 +87,7 @@ export class UserController {
   //TODO:Not done yet
   // upload profile
   @Patch('/upload/profile')
+  @UseGuards(JwtGuard)
   @UseInterceptors(FileInterceptor('file'))
   uploadProfile(
     @UploadedFile(
@@ -100,8 +101,9 @@ export class UserController {
         }),
     )
     file: Express.Multer.File,
+    @GetUser() user: User,
   ) {
-    console.log(file);
+    return this.service.uploadProfile(file, user);
   }
 
   // delete account
