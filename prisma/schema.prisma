@@ -75,7 +75,7 @@ model Course {
   id          String     @id @default(uuid())
   courseName  String
   category    CATEGORY
-  mentorName      String
+  mentorName  String
   mentorEmail String
   rating      String
   paid        PRICE
@@ -91,6 +91,7 @@ model Course {
 
 model Chapter {
   id       Int     @id @default(autoincrement())
+  name     String
   desc     String
   url      String
   Course   Course? @relation(fields: [courseId], references: [id])

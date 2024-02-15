@@ -13,7 +13,6 @@ export class MentorGuard implements CanActivate {
 
   canActivate(context: ExecutionContext): boolean {
     const roles = this.reflector.get<string[]>('roles', context.getHandler());
-    console.log(roles);
 
     if (!roles || !roles.includes('MENTOR')) {
       throw new UnauthorizedException(
