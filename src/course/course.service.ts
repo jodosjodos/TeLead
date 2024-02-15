@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { CreateChapterDto, CreateCourseDto } from './dto';
 import { DatabaseService } from 'src/database/database.service';
 import { User } from '@prisma/client';
@@ -38,47 +42,54 @@ export class CourseService {
     file: Express.Multer.File,
     courseId: string,
   ) {
-    // check course mentor meet with authorized mentor
-    const course = await this.prisma.course.findUnique({
-      where: {
-        id: courseId,
-      },
-    });
-    // when course id doesn't exists or not match
-    if (!course) throw new BadRequestException('No course found with that id');
-    if (course.mentorEmail !== user.email)
-      throw new BadRequestException(
-        "course mentor doesn't not meet with your email",
-      );
-    // upload video to cloud
-    const res = await this.cloud.uploadVideo(file, dto.name);
-    const chapter = await this.prisma.chapter.create({
-      data: {
-        desc: dto.description,
-        name: dto.name,
-        url: res.secure_url,
-      },
-    });
+    try {
+      // check course mentor meet with authorized mentor
+      const course = await this.prisma.course.findUnique({
+        where: {
+          id: courseId,
+        },
+      });
+      // when course id doesn't exists or not match
+      if (!course)
+        throw new BadRequestException('No course found with that id');
+      if (course.mentorEmail !== user.email)
+        throw new BadRequestException(
+          "course mentor doesn't not meet with your email",
+        );
+      // upload video to cloud
+      const res = await this.cloud.uploadVideo(file, dto.name);
+      const chapter = await this.prisma.chapter.create({
+        data: {
+          desc: dto.description,
+          name: dto.name,
+          url: res.secure_url,
+        },
+      });
 
-    // include chapter in course
-    const updatedCourse = await this.prisma.course.update({
-      where: {
-        id: courseId,
-        mentorEmail: user.email,
-      },
-      data: {
-        chapters: {
-          connect: {
-            id: chapter.id,
+      // include chapter in course
+      const updatedCourse = await this.prisma.course.update({
+        where: {
+          id: courseId,
+          mentorEmail: user.email,
+        },
+        data: {
+          chapters: {
+            connect: {
+              id: chapter.id,
+            },
           },
         },
-      },
-      include: {
-        chapters: true,
-      },
-    });
+        include: {
+          chapters: true,
+        },
+      });
 
-    // return course with related chapters
-    return updatedCourse;
+      // return course with related chapters
+      return updatedCourse;
+    } catch (err) {
+      console.log(err);
+
+      throw new InternalServerErrorException(err);
+    }
   }
 }

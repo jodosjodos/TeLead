@@ -29,7 +29,7 @@ export class CloudinaryService {
     fileName: string,
   ): Promise<CloudinaryResponse> {
     return new Promise<CloudinaryResponse>((resolve, reject) => {
-      const uploadStream = cloudinary.uploader.upload_chunked_stream(
+      const uploadStream = cloudinary.uploader.upload_stream(
         {
           folder: 'TeLead_chapter',
           public_id: fileName,
