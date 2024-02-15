@@ -44,6 +44,7 @@ export class CourseService {
         id: courseId,
       },
     });
+    // when course id doesn't exists or not match
     if (!course) throw new BadRequestException('No course found with that id');
     if (course.mentorEmail !== user.email)
       throw new BadRequestException(
@@ -59,6 +60,7 @@ export class CourseService {
       },
     });
 
+    // include chapter in course
     const updatedCourse = await this.prisma.course.update({
       where: {
         id: courseId,
@@ -75,6 +77,8 @@ export class CourseService {
         chapters: true,
       },
     });
+
+    // return course with related chapters
     return updatedCourse;
   }
 }
