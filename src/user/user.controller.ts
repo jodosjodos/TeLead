@@ -84,7 +84,6 @@ export class UserController {
     return this.service.getAccountDetails(user, id);
   }
 
-  //TODO:Not done yet
   // upload profile
   @Patch('/upload/profile')
   @UseGuards(JwtGuard)
