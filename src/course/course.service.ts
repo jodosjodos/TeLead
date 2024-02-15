@@ -121,23 +121,42 @@ export class CourseService {
   async filteredCourse(user: User, dto: FilterDto) {
     //  features must more than 1
     try {
-      const filteredCourses = await this.prisma.course.findMany({
-        where: {
-          mentorEmail: user.email,
-          category: dto.category,
-          LEVEL: dto.level,
-          paid: dto.payType,
-          features: { hasSome: dto.features },
-        },
-      });
+      if (dto.features && dto.features.length > 0) {
+        const filteredCourses = await this.prisma.course.findMany({
+          where: {
+            mentorEmail: user.email,
+            category: dto.category,
+            LEVEL: dto.level,
+            paid: dto.payType,
+            features: { hasSome: dto.features },
+          },
+        });
 
-      if (filteredCourses.length === 0) {
-        throw new BadRequestException(
-          'unmatched course or no course created by that mentor ',
-        );
+        if (filteredCourses.length === 0) {
+          throw new BadRequestException(
+            'unmatched course or no course created by that mentor ',
+          );
+        }
+
+        return filteredCourses;
+      } else {
+        const filteredCourses = await this.prisma.course.findMany({
+          where: {
+            mentorEmail: user.email,
+            category: dto.category,
+            LEVEL: dto.level,
+            paid: dto.payType,
+          },
+        });
+
+        if (filteredCourses.length === 0) {
+          throw new BadRequestException(
+            'unmatched course or no course created by that mentor ',
+          );
+        }
+
+        return filteredCourses;
       }
-
-      return filteredCourses;
     } catch (err) {
       throw new InternalServerErrorException(err);
     }

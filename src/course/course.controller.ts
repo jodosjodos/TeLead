@@ -54,7 +54,7 @@ export class CourseController {
   }
 
   // filter
-  // features in filter must be included and must be greater than one
+  // if features included include more than one
   @UseGuards(JwtGuard)
   @Get('/filter')
   getFilteredCourse(

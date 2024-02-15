@@ -38,7 +38,6 @@ export class FilterDto {
   @IsEnum(LEVELS)
   level?: LEVELS;
   @IsOptional()
-  @IsOptional()
   @IsEnum(FEATURES, { each: true })
   @ArrayMinSize(1, { message: 'At least one feature must be provided' })
   features?: FEATURES[];
