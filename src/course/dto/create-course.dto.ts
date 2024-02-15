@@ -13,11 +13,6 @@ enum FEATURES {
   PRACTICE_TEST = 'PRACTICE_TEST',
 }
 
-type chapter = {
-  desc: string;
-  url?: string;
-};
-
 export class CreateCourseDto {
   @IsNotEmpty()
   @IsString()
@@ -37,7 +32,7 @@ export class CreateCourseDto {
   @IsNotEmpty()
   paid: 'FREE' | 'PAID';
 
-  //TODO:check type of  paid chosen
+  @IsNotEmpty()
   price: string;
 
   @IsNotEmpty({ message: 'level of your course ' })
@@ -55,6 +50,4 @@ export class CreateCourseDto {
 
   @IsNotEmpty({ message: 'provide summary of your course' })
   description: string;
-
-  chapters: chapter[];
 }

@@ -31,6 +31,9 @@ export class CourseService {
         features: dto.features,
         description: dto.description,
       },
+      include: {
+        chapters: true,
+      },
     });
     return course;
   }
