@@ -11,7 +11,7 @@ export class CloudinaryService {
   ): Promise<CloudinaryResponse> {
     return new Promise<CloudinaryResponse>((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
-        { folder: 'TeLead', public_id: fileName },
+        { folder: 'TeLead_profile', public_id: fileName },
         (err, result) => {
           if (err) return reject(err);
           resolve(result);
@@ -19,6 +19,28 @@ export class CloudinaryService {
       );
 
       //   convert file to buffer
+      streamifier.createReadStream(file.buffer).pipe(uploadStream);
+    });
+  }
+
+  // upload video
+  async uploadVideo(
+    file: Express.Multer.File,
+    fileName: string,
+  ): Promise<CloudinaryResponse> {
+    return new Promise<CloudinaryResponse>((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_chunked_stream(
+        {
+          folder: 'TeLead_chapter',
+          public_id: fileName,
+          resource_type: 'video',
+          chunk_size: 10 * 1024 * 1024,
+        },
+        (err, result) => {
+          if (err) return reject(err);
+          resolve(result);
+        },
+      );
       streamifier.createReadStream(file.buffer).pipe(uploadStream);
     });
   }

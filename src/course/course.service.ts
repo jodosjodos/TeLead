@@ -2,10 +2,14 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateChapterDto, CreateCourseDto } from './dto';
 import { DatabaseService } from 'src/database/database.service';
 import { User } from '@prisma/client';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Injectable()
 export class CourseService {
-  constructor(private readonly prisma: DatabaseService) {}
+  constructor(
+    private readonly prisma: DatabaseService,
+    private cloud: CloudinaryService,
+  ) {}
 
   // create course
   async createCourse(dto: CreateCourseDto, user: User) {
@@ -45,11 +49,13 @@ export class CourseService {
       throw new BadRequestException(
         "course mentor doesn't not meet with your email",
       );
+    // upload video to cloud
+    const res = await this.cloud.uploadVideo(file, dto.name);
     const chapter = await this.prisma.chapter.create({
       data: {
         desc: dto.description,
         name: dto.name,
-        url: 'mee',//TODO:use cloudinary
+        url: res.secure_url,
       },
     });
 
@@ -65,7 +71,10 @@ export class CourseService {
           },
         },
       },
+      include: {
+        chapters: true,
+      },
     });
-    console.log(file, dto, course);
+    return updatedCourse;
   }
 }
