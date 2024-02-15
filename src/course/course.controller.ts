@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   Param,
   Patch,
   Post,
@@ -41,5 +42,13 @@ export class CourseController {
     @Param('courseId') courseId: string,
   ) {
     return this.service.addChapter(dto, user, file, courseId);
+  }
+
+  // get all courses ascending
+  @UseGuards(JwtGuard, MentorGuard)
+  @Roles('MENTOR')
+  @Get('/all')
+  getAllCourses(@GetUser() user: User) {
+    return this.service.getCourses(user);
   }
 }

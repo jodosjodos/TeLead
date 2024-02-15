@@ -90,8 +90,29 @@ export class CourseService {
       // return course with related chapters
       return updatedCourse;
     } catch (err) {
-      console.log(err);
+      throw new InternalServerErrorException(err);
+    }
+  }
 
+  // get sorted course
+  async getCourses(user: User) {
+    try {
+      const sortedRes = await this.prisma.course.findMany({
+        where: {
+          mentorEmail: user.email,
+        },
+        orderBy: {
+          courseName: 'asc',
+        },
+        include: {
+          chapters: true,
+        },
+      });
+      if (sortedRes.length === 0) {
+        throw new BadRequestException('No course created by that mentor');
+      }
+      return sortedRes;
+    } catch (err) {
       throw new InternalServerErrorException(err);
     }
   }
