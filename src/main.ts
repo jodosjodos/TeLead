@@ -10,6 +10,7 @@ async function bootstrap() {
   const { httpAdapter } = app.get(HttpAdapterHost);
   app.useGlobalFilters(new AllExceptionFilter(httpAdapter));
   app.setGlobalPrefix('api/v1');
+  app.enableCors();
   const port = 4000;
 
   // Swagger configuration

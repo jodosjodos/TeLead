@@ -5,6 +5,7 @@ import { DatabaseModule } from './database/database.module';
 import { ConfigModule } from '@nestjs/config';
 import { EmailModule } from './email/email.module';
 import { CourseModule } from './course/course.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 @Module({
   imports: [
     UserModule,
@@ -13,6 +14,7 @@ import { CourseModule } from './course/course.module';
     ConfigModule.forRoot({ isGlobal: true }),
     EmailModule,
     CourseModule,
+    CloudinaryModule,
   ],
 })
 export class AppModule {}

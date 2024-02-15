@@ -89,7 +89,7 @@ export class UserController {
   @Patch('/upload/profile')
   @UseGuards(JwtGuard)
   @UseInterceptors(FileInterceptor('file'))
-  uploadProfile(
+  upload(
     @UploadedFile(
       new ParseFilePipeBuilder()
 
