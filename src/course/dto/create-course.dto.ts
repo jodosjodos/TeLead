@@ -1,9 +1,28 @@
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import {
+  ArrayMinSize,
+  IsArray,
+  IsEnum,
+  IsNotEmpty,
+  IsString,
+} from 'class-validator';
+
+enum FEATURES {
+  ALL_CAPTION = 'ALL_CAPTION',
+  QUIZZES = 'QUIZZES',
+  CODING_EXERCISES = 'CODING_EXERCISES',
+  PRACTICE_TEST = 'PRACTICE_TEST',
+}
+
+type chapter = {
+  desc: string;
+  url?: string;
+};
 
 export class CreateCourseDto {
   @IsNotEmpty()
   @IsString()
   courseName: string;
+
   @IsNotEmpty({ message: 'please specify course category' })
   category:
     | 'THREE_DESIGN'
@@ -14,27 +33,28 @@ export class CreateCourseDto {
     | 'PERSONAL_DEVELOPMENT'
     | 'OFFICE_PRODUCTIVITY'
     | 'HR_MANAGEMENT';
-  @IsEmail()
-  @IsNotEmpty()
-  mentor: string;
+
   @IsNotEmpty()
   paid: 'FREE' | 'PAID';
+
   //TODO:check type of  paid chosen
   price: string;
+
   @IsNotEmpty({ message: 'level of your course ' })
   level: 'ALL_LEVELS' | 'BEGINNERS' | 'INTERMEDIATE' | 'EXPERT';
-  @IsNotEmpty({ message: 'length of course is required' })
+  @IsNotEmpty()
   duration: string;
-  // TODO:check provided features
-  @IsNotEmpty({ message: ' please provide features of your course' })
-  features: string[];
+  @IsArray({ message: 'Features must be an array' })
+  @ArrayMinSize(1, { message: 'At least one feature must be provided' })
+  @IsEnum(FEATURES, {
+    each: true,
+    message:
+      'Features must be ALL_CAPTION, QUIZZES, CODING_EXERCISES, or PRACTICE_TEST',
+  })
+  features: FEATURES[];
+
   @IsNotEmpty({ message: 'provide summary of your course' })
   description: string;
+
   chapters: chapter[];
 }
-
-type chapter = {
-  id: string;
-  desc: string;
-  url: string;
-};

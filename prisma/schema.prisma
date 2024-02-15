@@ -72,10 +72,11 @@ model User {
 
 // not migrated already
 model Course {
-  id          String    @id @default(uuid())
+  id          String     @id @default(uuid())
   courseName  String
   category    CATEGORY
-  mentor      String
+  mentorName      String
+  mentorEmail String
   rating      String
   paid        PRICE
   price       String
