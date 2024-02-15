@@ -194,16 +194,23 @@ export class UserService {
 
   async uploadProfile(file: Express.Multer.File, user: User) {
     try {
-      const uploadResult = await this.cloudinaryService.uploadFile(file);
+      const uploadResult = await this.cloudinaryService.uploadFile(
+        file,
+        user.email.replace('@gmail.com', ''),
+      );
 
       console.log('Successfully uploaded:', uploadResult);
 
-      // Assuming you have a method to update the user's profile URL in your database
-      // const updatedUser = await this.updateUserProfileUrl(
-      //   user.id,
-      //   uploadResult.Location,
-      // );
-      return uploadResult;
+      const updatedUser = await this.prismaService.user.update({
+        where: {
+          id: user.id,
+          email: user.email,
+        },
+        data: {
+          profile: uploadResult.secure_url,
+        },
+      });
+      return updatedUser;
     } catch (error) {
       console.error('Error uploading file:', error);
       throw new InternalServerErrorException(error);
