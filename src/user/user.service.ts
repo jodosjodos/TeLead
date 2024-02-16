@@ -67,13 +67,12 @@ export class UserService {
       throw new BadRequestException(
         ' user with that id have been already verified',
       );
-    const verifiedUser = await this.prismaService.user.update({
+    await this.prismaService.user.update({
       where: { id },
       data: {
         isVerified: true,
       },
     });
-    console.log(verifiedUser);
 
     return {
       msg: ' you have verified your email now you can use your account',

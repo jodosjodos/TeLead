@@ -180,13 +180,14 @@ export class CourseService {
   // pagination
   async getCoursesPaginated(user: User, page = 1, perPage = 10) {
     try {
-      const totalCounts = await this.prisma.course.findMany({
+      const totalCourses = await this.prisma.course.findMany({
         where: {
           mentorEmail: user.email,
         },
       });
 
-      const totalPages = totalCounts.length / perPage;
+      if (totalCourses.length < perPage) return totalCourses;
+      const totalPages = totalCourses.length / perPage;
       if (page > totalPages)
         throw new BadRequestException('no more records for you ');
       const paginatedCourses = await this.prisma.course.findMany({
@@ -196,8 +197,6 @@ export class CourseService {
         skip: (page - 1) * perPage,
         take: perPage,
       });
-      console.log(paginatedCourses.length);
-
       if (paginatedCourses.length === 0) {
         throw new BadRequestException('no course created by that mentor ');
       }

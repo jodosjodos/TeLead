@@ -46,7 +46,7 @@ export class UserController {
 
   // verify account
   @Get('verify/:id/:email')
-  verifyUser(@Param('id') id: string, @Param('email') email: string) {
+  verify(@Param('id') id: string, @Param('email') email: string) {
     return this.service.verifyUser(id, email);
   }
 
