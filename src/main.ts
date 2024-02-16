@@ -18,7 +18,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('TeLead API')
     .setDescription(
-      '📚🎓 TeLead is an e-learning platform that provides a wide range of educational resources and courses. Explore our APIs to build amazing learning experiences!',
+      ' 🚀 TeLead API: Empowering education! Manage courses, users, resources, and track progress effortlessly. Foster collaboration, personalize learning, and scale with ease. Get started today! 🎓🌟',
     )
     .setVersion('1.0')
     .addTag('TeLead')

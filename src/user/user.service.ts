@@ -25,79 +25,94 @@ export class UserService {
     private readonly emailService: EmailService,
     private readonly cloudinaryService: CloudinaryService,
   ) {}
-  async create(createUserDto: CreateUserDto) {
-    const user = await this.prismaService.user.findUnique({
-      where: { email: createUserDto.email },
-    });
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    try {
+      const user = await this.prismaService.user.findUnique({
+        where: { email: createUserDto.email },
+      });
 
-    //  check if user already exists
-    if (user)
-      throw new BadRequestException(
-        'user with this email already exists , please login',
-      );
+      //  check if user already exists
+      if (user)
+        throw new BadRequestException(
+          'user with this email already exists , please login',
+        );
 
-    // save user
-    const defaultDateOfBirth = new Date('2006-01-01T00:00:00Z');
-    const hashedPassword = await argon2.hash(createUserDto.password);
-    const savedUser = await this.prismaService.user.create({
-      data: {
-        email: createUserDto.email,
-        password: hashedPassword,
-        fullName: 'John Doe',
-        phoneNumber: '+250727866254',
-        nickName: 'John',
-        dateOfBirth: defaultDateOfBirth,
-        gender: Gender.MALE,
-      },
-    });
+      // save user
+      const defaultDateOfBirth = new Date('2006-01-01T00:00:00Z');
+      const hashedPassword = await argon2.hash(createUserDto.password);
+      const savedUser = await this.prismaService.user.create({
+        data: {
+          email: createUserDto.email,
+          password: hashedPassword,
+          fullName: 'John Doe',
+          phoneNumber: '+250727866254',
+          nickName: 'John',
+          dateOfBirth: defaultDateOfBirth,
+          gender: Gender.MALE,
+        },
+      });
 
-    // send email for verify user
-    const confirmUrl = `http://localhost:4000/api/v1/user/verify/${savedUser.id}/${savedUser.email}`;
-    await this.emailService.sendEmail(confirmUrl, savedUser);
-    return savedUser;
+      // send email for verify user
+      const confirmUrl = `http://localhost:4000/api/v1/user/verify/${savedUser.id}/${savedUser.email}`;
+      await this.emailService.sendEmail(confirmUrl, savedUser);
+      return savedUser;
+    } catch (err) {
+      throw new InternalServerErrorException(err);
+    }
   }
 
   // verify user profile
   async verifyUser(id: string, email: string) {
-    const user = await this.prismaService.user.findUnique({
-      where: { id, email },
-    });
-    if (!user) throw new BadRequestException('non-match email  and id');
-    if (user.isVerified)
-      throw new BadRequestException(
-        ' user with that id have been already verified',
-      );
-    await this.prismaService.user.update({
-      where: { id },
-      data: {
-        isVerified: true,
-      },
-    });
+    try {
+      const user = await this.prismaService.user.findUnique({
+        where: { id, email },
+      });
+      if (!user) throw new BadRequestException('non-match email  and id');
+      if (user.isVerified)
+        throw new BadRequestException(
+          ' user with that id have been already verified',
+        );
+      await this.prismaService.user.update({
+        where: { id },
+        data: {
+          isVerified: true,
+        },
+      });
 
-    return {
-      msg: ' you have verified your email now you can use your account',
-    };
+      return {
+        msg: ' you have verified your email now you can use your account',
+      };
+    } catch (err) {
+      throw new InternalServerErrorException(err);
+    }
   }
 
   // login user
-  async login(createUserDto: CreateUserDto) {
-    // check if user already exists
-    const user = await this.prismaService.user.findUnique({
-      where: { email: createUserDto.email },
-    });
+  async login(
+    createUserDto: CreateUserDto,
+  ): Promise<{ user: User; token: string }> {
+    try {
+      // check if user already exists
+      const user = await this.prismaService.user.findUnique({
+        where: { email: createUserDto.email },
+      });
 
-    if (!user) throw new BadRequestException(' no account with that email ');
-    if (!user.isVerified)
-      throw new UnauthorizedException('please verify your account');
-    const isPasswordEqual = await argon2.verify(
-      user.password,
-      createUserDto.password,
-    );
-    if (!isPasswordEqual) throw new BadRequestException('invalid credentials');
+      if (!user) throw new BadRequestException(' no account with that email ');
+      if (!user.isVerified)
+        throw new UnauthorizedException('please verify your account');
+      const isPasswordEqual = await argon2.verify(
+        user.password,
+        createUserDto.password,
+      );
+      if (!isPasswordEqual)
+        throw new BadRequestException('invalid credentials');
 
-    // generate jwt token
-    const token = await generateToken(user.email, user.id);
-    return { user: { ...user }, token };
+      // generate jwt token
+      const token = await generateToken(user.email, user.id);
+      return { user: { ...user }, token };
+    } catch (err) {
+      throw new InternalServerErrorException(err);
+    }
   }
 
   //  fill profile
