@@ -24,7 +24,14 @@ import {
   VerifyUserDto,
 } from './dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
 @ApiTags('user')
 @Controller('user')
@@ -83,14 +90,60 @@ export class UserController {
   }
 
   // verify account
+  //swagger
+  @ApiOperation({
+    summary: 'verify account',
+    description:
+      'verify user account using user id and email , the verification url sent to user during creation ',
+  })
+  @ApiParam({ name: 'id', type: 'string' })
+  @ApiParam({
+    name: 'email',
+    type: 'string',
+    description: 'email of the user',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'user have been verified successfully',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'user is already verified or  non-match email and id',
+  })
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+    description: 'server error',
+  })
+  // swagger
   @Get('verify/:id/:email')
-  verify(@Param('id') id: string, @Param('email') email: string) {
+  verify(
+    @Param('id') id: string,
+    @Param('email') email: string,
+  ): Promise<{ msg: string }> {
     return this.service.verifyUser(id, email);
   }
 
   // fillProfile
+  // swagger
+  @ApiOperation({
+    summary: 'fill  profile',
+    description:
+      'updating user profile by overriding default ones and add your true identity ',
+  })
+  @ApiBody({ type: UpdateUserDto })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'not your id or id not much with account',
+  })
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+    description: 'server error',
+  })
+  @ApiBearerAuth()
+  // swagger
   @UseGuards(JwtGuard)
   @Patch('update/:id')
+  @ApiParam({ name: 'id', type: 'string', required: true })
   update(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
