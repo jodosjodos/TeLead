@@ -19,6 +19,7 @@ import { GetUser } from 'src/decorator';
 import { User } from '@prisma/client';
 import {
   CreateUserDto,
+  FileUploadDto,
   ResetPasswordDTO,
   UpdateUserDto,
   VerifyUserDto,
@@ -27,6 +28,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
   ApiBody,
+  ApiConsumes,
   ApiOperation,
   ApiParam,
   ApiResponse,
@@ -227,6 +229,33 @@ export class UserController {
   }
 
   // account details
+  // swagger conf
+
+  @ApiOperation({
+    summary: 'get account details',
+    description: 'this return all details of specific user ',
+  })
+  @ApiParam({
+    name: 'id',
+    type: 'string',
+    required: true,
+    description: 'user id ',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'return user details',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'no null id  or id not match with account',
+  })
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+    description: 'server error',
+  })
+  @ApiBearerAuth()
+
+  // end swagger conf
   @Get('/account/:id')
   @UseGuards(JwtGuard)
   getAccountDetails(@GetUser() user: User, @Param('id') id: string) {
@@ -234,6 +263,30 @@ export class UserController {
   }
 
   // upload profile
+
+  // swagger conf
+
+  @ApiOperation({
+    summary: 'upload profile picture',
+    description:
+      ' upload profile picture of user and return user with updated profile',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'return user details with updated profile',
+  })
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+    description: 'server error',
+  })
+  @ApiBearerAuth()
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'upload profile picture , make sure that file is image ',
+    type: FileUploadDto,
+    required: true,
+  })
+  // end swagger conf
   @Patch('/upload/profile')
   @UseGuards(JwtGuard)
   @UseInterceptors(FileInterceptor('file'))
@@ -244,6 +297,7 @@ export class UserController {
         .addMaxSizeValidator({
           maxSize: 5532403,
         })
+
         .build({
           errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
         }),
