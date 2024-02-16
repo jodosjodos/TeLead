@@ -311,6 +311,7 @@ export class UserController {
 
   @ApiExcludeEndpoint()
   // delete account
+  //TODO:not done yet
   @Delete('delete/:id')
   remove(@Param('id') id: string) {
     return this.service.remove(id);
