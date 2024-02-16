@@ -46,12 +46,22 @@ export class CourseController {
     return this.service.addChapter(dto, user, file, courseId);
   }
 
-  // get all courses ascending
+  // get all courses
   @UseGuards(JwtGuard, MentorGuard)
   @Roles('MENTOR')
   @Get('/all')
-  getAllCourses(@GetUser() user: User): Promise<Course[]> {
+  getAllCourses(
+    @GetUser() user: User,
+  ): Promise<{ res: Course[]; count: number }> {
     return this.service.getCourses(user);
+  }
+
+  // get all courses ascending
+  @UseGuards(JwtGuard, MentorGuard)
+  @Roles('MENTOR')
+  @Get('/all/sort')
+  getAllCourseSort(@GetUser() user: User): Promise<Course[]> {
+    return this.service.getCoursesSorted(user);
   }
 
   // filter
@@ -63,5 +73,17 @@ export class CourseController {
     @Query() dto: FilterDto,
   ): Promise<Course[]> {
     return this.service.filteredCourse(user, dto);
+  }
+
+  // pagination
+  @UseGuards(JwtGuard, MentorGuard)
+  @Roles('MENTOR')
+  @Get('/all/paginate')
+  getCoursesPaginate(
+    @Query('page') pages = 1,
+    @Query('perPage') perPage = 10,
+    @GetUser() user: User,
+  ): Promise<Course[]> {
+    return this.service.getCoursesPaginated(user, +pages, +perPage);
   }
 }

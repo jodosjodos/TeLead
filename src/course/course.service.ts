@@ -94,8 +94,26 @@ export class CourseService {
     }
   }
 
+  // get all coursers unsorted
+  async getCourses(user: User): Promise<{ res: Course[]; count: number }> {
+    try {
+      const res = await this.prisma.course.findMany({
+        where: {
+          mentorEmail: user.email,
+        },
+      });
+      if (res.length === 0) {
+        throw new BadRequestException('No course created by that mentor');
+      }
+
+      return { res: res, count: res.length };
+    } catch (err) {
+      throw new InternalServerErrorException(err);
+    }
+  }
+
   // get sorted course
-  async getCourses(user: User): Promise<Course[]> {
+  async getCoursesSorted(user: User): Promise<Course[]> {
     try {
       const sortedRes = await this.prisma.course.findMany({
         where: {
@@ -103,9 +121,6 @@ export class CourseService {
         },
         orderBy: {
           courseName: 'asc',
-        },
-        include: {
-          chapters: true,
         },
       });
       if (sortedRes.length === 0) {
@@ -157,6 +172,36 @@ export class CourseService {
 
         return filteredCourses;
       }
+    } catch (err) {
+      throw new InternalServerErrorException(err);
+    }
+  }
+
+  // pagination
+  async getCoursesPaginated(user: User, page = 1, perPage = 10) {
+    try {
+      const totalCounts = await this.prisma.course.findMany({
+        where: {
+          mentorEmail: user.email,
+        },
+      });
+
+      const totalPages = totalCounts.length / perPage;
+      if (page > totalPages)
+        throw new BadRequestException('no more records for you ');
+      const paginatedCourses = await this.prisma.course.findMany({
+        where: {
+          mentorEmail: user.email,
+        },
+        skip: (page - 1) * perPage,
+        take: perPage,
+      });
+      console.log(paginatedCourses.length);
+
+      if (paginatedCourses.length === 0) {
+        throw new BadRequestException('no course created by that mentor ');
+      }
+      return paginatedCourses;
     } catch (err) {
       throw new InternalServerErrorException(err);
     }
