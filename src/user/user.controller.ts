@@ -71,6 +71,10 @@ export class UserController {
   })
   @ApiBody({ type: CreateUserDto })
   @ApiResponse({
+    status: 200,
+    description: 'login successfully',
+  })
+  @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
     description: 'no account found with that email or invalid credentials',
   })
@@ -132,6 +136,10 @@ export class UserController {
   })
   @ApiBody({ type: UpdateUserDto })
   @ApiResponse({
+    status: 200,
+    description: 'user have been  successfully updated his profile',
+  })
+  @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
     description: 'not your id or id not much with account',
   })
@@ -140,7 +148,7 @@ export class UserController {
     description: 'server error',
   })
   @ApiBearerAuth()
-  // swagger
+  // end  swagger
   @UseGuards(JwtGuard)
   @Patch('update/:id')
   @ApiParam({ name: 'id', type: 'string', required: true })
@@ -152,19 +160,69 @@ export class UserController {
     return this.service.update(id, updateUserDto, user);
   }
 
+  // swagger
+  @ApiOperation({
+    summary: 'request reset password via email',
+    description: 'send reset password url to your email you have provided',
+  })
+  @ApiBody({ type: VerifyUserDto })
+  @ApiResponse({
+    status: 200,
+    description: 'reset url have been sent to your email successfully',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: "user with email doesn't exists",
+  })
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+    description: 'server error',
+  })
+  @ApiBearerAuth()
+  // end swagger
+
   // reset password request
   @Get('/resetRequest/email')
   resetPasswordRequest(@Body() email: VerifyUserDto) {
     return this.service.resetPasswordRequest(email);
   }
 
-  // process reset request
+  // swagger
+  @ApiOperation({
+    summary: 'reset password ',
+    description:
+      'user provide new password and confirmPassword so that we can update his password ',
+  })
+  @ApiParam({ name: 'id', type: 'string' })
+  @ApiParam({
+    name: 'email',
+    type: 'string',
+    description: 'email of the user',
+  })
+  @ApiBody({ type: ResetPasswordDTO })
+  @ApiResponse({
+    status: 200,
+    description: 'password have been updated successfully',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description:
+      'please provide valid id and email you have received on email or confirm password and password not match',
+  })
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+    description: 'server error',
+  })
+  @ApiBearerAuth()
+  //end swagger
+
+  // reset password
   @Patch('/reset/email/:id/:email')
   resetPassword(
     @Param('email') email: string,
     @Param('id') id: string,
     @Body() passwords: ResetPasswordDTO,
-  ) {
+  ): Promise<{ msg: string; loginUrl: string }> {
     return this.service.resetPasswordEmail(email, id, passwords);
   }
 

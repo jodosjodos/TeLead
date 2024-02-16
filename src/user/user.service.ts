@@ -129,12 +129,7 @@ export class UserService {
       where: { email: email.email },
     });
     if (!user) throw new BadRequestException(" user with email doesn't exists");
-    if (
-      user.nickName == 'John' &&
-      user.fullName == 'John Doe' &&
-      user.phoneNumber == '+250727866254'
-    )
-      throw new UnauthorizedException('please update your  profile');
+
     const resetLink = `http://localhost:4000/api/v1/user/reset/email/${user.id}/${user.email}`;
 
     await this.emailService.sendResetEmail(email, user, resetLink);
@@ -148,7 +143,7 @@ export class UserService {
     email: string,
     id: string,
     passwords: ResetPasswordDTO,
-  ) {
+  ): Promise<{ msg: string; loginUrl: string }> {
     console.log(passwords);
 
     const user = await this.prismaService.user.findUnique({
