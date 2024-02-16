@@ -132,6 +132,28 @@ export class CourseService {
     }
   }
 
+  // get single course
+  async getOneCourse(user: User, id: string): Promise<Course> {
+    try {
+      const course = await this.prisma.course.findUnique({
+        where: {
+          id: id,
+          mentorEmail: user.email,
+        },
+        include: {
+          chapters: true,
+        },
+      });
+      if (!course)
+        throw new BadRequestException(
+          'no course found created by that mentor and have that id ',
+        );
+      return course;
+    } catch (err) {
+      throw new InternalServerErrorException(err);
+    }
+  }
+
   // get courses filtered
   async filteredCourse(user: User, dto: FilterDto) {
     //  features must more than 1

@@ -64,6 +64,17 @@ export class CourseController {
     return this.service.getCoursesSorted(user);
   }
 
+  // get single course
+  @UseGuards(JwtGuard, MentorGuard)
+  @Roles('MENTOR')
+  @Get('/single/:id')
+  getSingleCourse(
+    @GetUser() user: User,
+    @Param('id') id: string,
+  ): Promise<Course> {
+    return this.service.getOneCourse(user, id);
+  }
+
   // filter
   // if features included include more than one
   @UseGuards(JwtGuard)
