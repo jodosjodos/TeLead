@@ -29,6 +29,7 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiConsumes,
+  ApiExcludeEndpoint,
   ApiOperation,
   ApiParam,
   ApiResponse,
@@ -308,6 +309,7 @@ export class UserController {
     return this.service.uploadProfile(file, user);
   }
 
+  @ApiExcludeEndpoint()
   // delete account
   @Delete('delete/:id')
   remove(@Param('id') id: string) {
