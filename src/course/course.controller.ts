@@ -18,7 +18,8 @@ import { CreateChapterDto, CreateCourseDto, FilterDto } from './dto';
 import { GetUser } from 'src/decorator';
 import { Course, User } from '@prisma/client';
 import { FileInterceptor } from '@nestjs/platform-express';
-
+import { ApiTags } from '@nestjs/swagger';
+@ApiTags('course')
 @Controller('course')
 export class CourseController {
   constructor(private readonly service: CourseService) {}
