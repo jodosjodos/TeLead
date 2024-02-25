@@ -35,6 +35,7 @@ export class CourseService {
         chapters: true,
       },
     });
+    // return created course
     return course;
   }
 
