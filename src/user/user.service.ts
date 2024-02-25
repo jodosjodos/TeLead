@@ -206,6 +206,7 @@ export class UserService {
           profile: uploadResult.secure_url,
         },
       });
+      // return updated user
       return updatedUser;
     } catch (error) {
       console.error('Error uploading file:', error);
