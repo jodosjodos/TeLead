@@ -182,7 +182,7 @@ export class UserService {
   getAccountDetails(user: User, id: string) {
     if (id == null) throw new BadRequestException('please provide your id');
     if (id !== user.id) throw new BadRequestException(' that is not your id ');
-
+    // return user
     return { user };
   }
 
