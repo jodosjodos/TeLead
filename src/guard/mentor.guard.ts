@@ -22,7 +22,7 @@ export class MentorGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest();
     const user: User = request.user;
-
+    // role is not mentor
     if (user.Role !== 'MENTOR')
       throw new UnauthorizedException(
         'please to access this route you must have MENTOR role',
