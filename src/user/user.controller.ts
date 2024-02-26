@@ -314,6 +314,7 @@ export class UserController {
   //TODO:not done yet
   @Delete('delete/:id')
   remove(@Param('id') id: string) {
+    // call delete service
     return this.service.remove(id);
   }
 }
