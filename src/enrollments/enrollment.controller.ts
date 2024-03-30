@@ -55,7 +55,7 @@ export class EnrollmentController {
   @Post('/enroll/:courseId')
   @UseGuards(JwtGuard)
   @Roles('STUDENT')
-  createEnroll(@GetUser() user: User, @Param('id') courseId: string) {
+  createEnroll(@GetUser() user: User, @Param('courseId') courseId: string) {
     return this.service.createEnroll(user, courseId);
   }
 }
