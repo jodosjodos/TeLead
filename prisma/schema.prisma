@@ -12,6 +12,8 @@ datasource db {
 
 enum Gender {
   MALE
+
+  
   FEMALE
 }
 
@@ -52,7 +54,7 @@ enum Role {
 
 model User {
   id              String            @id @default(uuid())
-  email           String            @unique 
+  email           String            @unique
   password        String
   fullName        String
   nickName        String
@@ -69,11 +71,11 @@ model User {
   enrollments     Enrollment[]
   chapterProgress ChapterProgress[]
 
-  @@map("users")
   @@index([email])
   @@index([createdAt])
   @@index([updatedAt])
   @@index([dateOfBirth])
+  @@map("users")
 }
 
 // not migrated already
@@ -93,11 +95,11 @@ model Course {
   chapters    Chapter[]
   enrollments Enrollment[]
 
-  @@map("courses")
   @@index([category])
   @@index([paid])
   @@index([features])
   @@index([LEVEL])
+  @@map("courses")
 }
 
 model Chapter {
@@ -111,20 +113,21 @@ model Chapter {
   userId          String?
   chapterProgress ChapterProgress[]
 
+  @@index([userId])
+  @@index([courseId])
   @@map("chapters")
-@@index([userId])
-@@index([courseId])
 }
 
 model Enrollment {
-  id        String @id @default(uuid())
-  student   User   @relation(fields: [studentId], references: [id])
+  id        String  @id @default(uuid())
+  student   User    @relation(fields: [studentId], references: [id])
   studentId String
-  course    Course @relation(fields: [courseId], references: [id])
+  course    Course  @relation(fields: [courseId], references: [id])
   courseId  String
   completed Boolean @default(false)
 
   @@unique([studentId, courseId])
+  @@map("enrollments")
 }
 
 model ChapterProgress {
@@ -137,6 +140,7 @@ model ChapterProgress {
   lastAccessed DateTime @default(now())
   chapter      Chapter  @relation(references: [id], fields: [chapterId])
   user         User     @relation(references: [id], fields: [userId])
-@@index([chapterId])
-@@index([userId])
+
+  @@index([chapterId])
+  @@index([userId])
 }
