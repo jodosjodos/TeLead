@@ -52,7 +52,7 @@ export class EnrollmentController {
 
   // implementation
   @HttpCode(HttpStatus.OK)
-  @Post('/enroll:/courseId')
+  @Post('/enroll/:courseId')
   @UseGuards(JwtGuard)
   @Roles('STUDENT')
   createEnroll(@GetUser() user: User, @Param('id') courseId: string) {
