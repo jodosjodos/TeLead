@@ -6,6 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import { EmailModule } from './email/email.module';
 import { CourseModule } from './course/course.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { EnrollmentModule } from './enrollments/enrollment.module';
 @Module({
   imports: [
     UserModule,
@@ -15,6 +16,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
     EmailModule,
     CourseModule,
     CloudinaryModule,
+    EnrollmentModule,
   ],
 })
 export class AppModule {}
