@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   ArrayMinSize,
   IsArray,
@@ -12,12 +13,25 @@ enum FEATURES {
   CODING_EXERCISES = 'CODING_EXERCISES',
   PRACTICE_TEST = 'PRACTICE_TEST',
 }
+enum PRICE {
+  FREE = 'FREE',
+  PAID = 'PAID',
+}
+
+enum LEVELS {
+  ALL_LEVELS = 'ALL_LEVELS',
+  BEGINNERS = 'BEGINNERS',
+  INTERMEDIATE = 'INTERMEDIATE',
+  EXPERT = 'EXPERT',
+}
 
 export class CreateCourseDto {
+  @ApiProperty()
   @IsNotEmpty()
   @IsString()
   courseName: string;
 
+  @ApiProperty()
   @IsNotEmpty({ message: 'please specify course category' })
   category:
     | 'THREE_DESIGN'
@@ -29,16 +43,32 @@ export class CreateCourseDto {
     | 'OFFICE_PRODUCTIVITY'
     | 'HR_MANAGEMENT';
 
+  @ApiProperty({
+    enum: PRICE,
+    enumName: 'paid or free',
+  })
   @IsNotEmpty()
-  paid: 'FREE' | 'PAID';
+  paid: PRICE;
 
+  @ApiProperty()
   @IsNotEmpty()
   price: string;
 
+  @ApiProperty({
+    enum: LEVELS,
+  })
   @IsNotEmpty({ message: 'level of your course ' })
-  level: 'ALL_LEVELS' | 'BEGINNERS' | 'INTERMEDIATE' | 'EXPERT';
+  level: LEVELS;
+
+  @ApiProperty()
   @IsNotEmpty()
   duration: string;
+
+  @ApiProperty({
+    enum: FEATURES,
+    isArray: true,
+    enumName: 'FEATURES',
+  })
   @IsArray({ message: 'Features must be an array' })
   @ArrayMinSize(1, { message: 'At least one feature must be provided' })
   @IsEnum(FEATURES, {
@@ -48,6 +78,7 @@ export class CreateCourseDto {
   })
   features: FEATURES[];
 
+  @ApiProperty()
   @IsNotEmpty({ message: 'provide summary of your course' })
   description: string;
 }
