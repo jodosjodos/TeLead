@@ -4,7 +4,6 @@ import { ValidationPipe } from '@nestjs/common';
 import { AllExceptionFilter } from './all-exception.filter';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
-//TODO: pagination and swagger documentation and readme.Me
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
