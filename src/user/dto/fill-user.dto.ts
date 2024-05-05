@@ -27,6 +27,10 @@ export class FillUserDto {
   @ApiProperty({ enum: ['MENTOR', 'STUDENT'] })
   role: 'MENTOR' | 'STUDENT';
   @IsNotEmpty()
-  @ApiProperty()
+  @ApiProperty({
+    required: true,
+    type: 'file',
+    format: 'binary',
+  })
   file: any;
 }
