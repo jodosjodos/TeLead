@@ -11,8 +11,6 @@ import {
   UseGuards,
   UseInterceptors,
   UploadedFile,
-  ParseFilePipeBuilder,
-  Put,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { JwtGuard } from 'src/guard';
@@ -132,48 +130,41 @@ export class UserController {
 
   // fillProfile
   // swagger
+  @Patch('/fillProfile/:id')
   @ApiOperation({
-    summary: 'fill  profile',
-    description:
-      'updating user profile by overriding default ones and add your true identity ',
+    summary: 'fill profile ',
+    description: 'fill profile',
   })
-  @ApiBody({ type: FillUserDto })
   @ApiResponse({
     status: 200,
-    description: 'user have been  successfully updated his profile',
+    description: 'user  have success filled profile',
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
-    description: 'not your id or id not much with account',
+    description: 'invalid credentials or  invalid inputs',
   })
   @ApiResponse({
     status: HttpStatus.INTERNAL_SERVER_ERROR,
     description: 'server error',
   })
-  @ApiBearerAuth()
-  // end  swagger
-  @UseGuards(JwtGuard)
-  @Patch('update/:id')
-  @ApiParam({ name: 'id', type: 'string', required: true })
   @ApiConsumes('multipart/form-data')
-  update(
-    @UploadedFile(
-      new ParseFilePipeBuilder()
-
-        .addMaxSizeValidator({
-          maxSize: 5532403,
-        })
-
-        .build({
-          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-        }),
-    )
-    file: Express.Multer.File,
-    @Param('id') id: string,
-    @Body() updateUserDto: FillUserDto,
+  @ApiBody({
+    description: 'fillProfile profile ',
+    type: FillUserDto,
+    required: true,
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @UseInterceptors(FileInterceptor('file'))
+  fillProfile(
     @GetUser() user: User,
+    @Body() fillProfile: FillUserDto,
+    @UploadedFile() file: Express.Multer.File,
+    @Param('id') userId: string,
   ) {
-    return this.service.update(id, updateUserDto, user, file);
+    console.log(file);
+
+    return this.service.update(userId, fillProfile, user, file);
   }
 
   // swagger
@@ -298,7 +289,7 @@ export class UserController {
   getAllEnrolledCourses(@GetUser() user: User) {
     return this.service.getAllEnrolledCourses(user);
   }
-  @Put('/updateProfile')
+  @Patch('/updateProfile')
   @ApiConsumes('multipart/form-data')
   @ApiOperation({
     summary: 'update profile ',
@@ -317,7 +308,7 @@ export class UserController {
     description: 'server error',
   })
   @ApiBody({
-    description: 'upload profile picture , make sure that file is image ',
+    description: 'update profile ',
     type: UpdateUserDto,
     required: true,
   })

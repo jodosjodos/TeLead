@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { IsNotEmpty, IsString, MinLength } from 'class-validator';
 
 export class FillUserDto {
   @IsString()
@@ -10,7 +10,6 @@ export class FillUserDto {
   @IsNotEmpty()
   @ApiProperty()
   nickName: string;
-  @IsDateString()
   @IsNotEmpty()
   @ApiProperty()
   dateOfBirth: Date;
@@ -26,7 +25,6 @@ export class FillUserDto {
   @IsNotEmpty({ message: 'password role must be either MENTOR  or STUDENT' })
   @ApiProperty({ enum: ['MENTOR', 'STUDENT'] })
   role: 'MENTOR' | 'STUDENT';
-  @IsNotEmpty()
   @ApiProperty({
     required: true,
     type: 'file',
