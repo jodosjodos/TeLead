@@ -159,6 +159,10 @@ export class EnrollmentService {
     });
     if (!courseChapters) {
       throw new BadRequestException(' no course with that id ');
+    } else if (courseChapters.chapters[0].chapterProgress.length == 0) {
+      throw new BadRequestException(
+        " you haven't already enrolled to this course",
+      );
     }
     return {
       msg: 'success return students progress',
