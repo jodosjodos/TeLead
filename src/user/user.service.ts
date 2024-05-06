@@ -236,10 +236,14 @@ export class UserService {
     updateProfile: UpdateUserDto,
     file: Express.Multer.File,
   ) {
-    const uploadProfile = await this.cloudinaryService.uploadFile(
-      file,
-      user.email.replace('@gmail.com', ''),
-    );
+    console.log(file);
+    let uploadedProfile;
+    if (file) {
+      uploadedProfile = await this.cloudinaryService.uploadFile(
+        file,
+        user.email.replace('@gmail.com', ''),
+      );
+    }
 
     const updatedProfile = await this.prismaService.user.update({
       where: {
@@ -250,7 +254,7 @@ export class UserService {
         nickName: updateProfile.nickName,
         dateOfBirth: updateProfile.dateOfBirth,
         phoneNumber: updateProfile.phoneNumber,
-        profile: uploadProfile.secure_url,
+        profile: uploadedProfile.secure_url,
       },
     });
     return updatedProfile;

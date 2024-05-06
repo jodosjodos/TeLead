@@ -1,21 +1,26 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsString, MinLength } from 'class-validator';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { IsDateString, IsOptional, IsString, MinLength } from 'class-validator';
 
 export class UpdateUserDto {
   @IsString()
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   fullName: string;
   @IsString()
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   nickName: string;
   @IsDateString()
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   dateOfBirth: Date;
   @MinLength(8)
   @IsString()
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   phoneNumber: string;
-  @ApiProperty({
+
+  @ApiPropertyOptional({
     required: true,
     type: 'string',
     format: 'binary',
