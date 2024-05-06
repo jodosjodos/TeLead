@@ -53,32 +53,6 @@ export class CourseController {
     return this.service.createCourse(dto, user);
   }
 
-  // add chapters in course
-  @Patch('/create/chapter/:courseId')
-
-  // swagger
-  @ApiBearerAuth()
-  @ApiOperation({
-    summary: 'Create a new chapter',
-    description: 'Create a new chapter',
-  })
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    description: 'upload chapter of course',
-    type: CreateChapterDto,
-  })
-  @UseGuards(JwtGuard, MentorGuard)
-  @Roles('MENTOR')
-  @UseInterceptors(FileInterceptor('file'))
-  createChapter(
-    @Body() dto: CreateChapterDto,
-    @GetUser() user: User,
-    @UploadedFile() file: Express.Multer.File,
-    @Param('courseId') courseId: string,
-  ) {
-    return this.service.addChapter(dto, user, file, courseId);
-  }
-
   // get all courses
   @ApiBearerAuth()
   @ApiOperation({
