@@ -7,6 +7,9 @@ import { EmailModule } from './email/email.module';
 import { CourseModule } from './course/course.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { EnrollmentModule } from './enrollments/enrollment.module';
+import { ChaptersController } from './chapters/chapters.controller';
+import { ChaptersService } from './chapters/chapters.service';
+import { ChaptersModule } from './chapters/chapters.module';
 @Module({
   imports: [
     UserModule,
@@ -17,6 +20,9 @@ import { EnrollmentModule } from './enrollments/enrollment.module';
     CourseModule,
     CloudinaryModule,
     EnrollmentModule,
+    ChaptersModule,
   ],
+  controllers: [ChaptersController],
+  providers: [ChaptersService],
 })
 export class AppModule {}
