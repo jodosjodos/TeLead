@@ -260,5 +260,3 @@ export class UserService {
     return updatedProfile;
   }
 }
-
-//TODO remove upload profile combine it in fill profile
