@@ -132,7 +132,6 @@ model Enrollment {
 
 model ChapterProgress {
   id Int @id @default(autoincrement())
-
   chapterId    Int
   userId       String
   completed    Boolean  @default(false)

@@ -65,4 +65,61 @@ export class EnrollmentService {
       throw new InternalServerErrorException(error);
     }
   }
+  // get all enrolled students to courses
+  async getAllEnrolledStudents(user: User, courseId: string) {
+    try {
+      return this.prisma.enrollment.findMany({
+        where: {
+          courseId,
+        },
+        include: {
+          student: {
+            select: {
+              id: true,
+              fullName: true,
+              nickName: true,
+            },
+          },
+        },
+      });
+    } catch (err) {
+      throw new InternalServerErrorException(err);
+    }
+  }
+
+  async updateProgressOrCreateIt(user: User, chapterId: number) {
+    try {
+      const progress = await this.prisma.chapterProgress.findFirst({
+        where: {
+          userId: user.id,
+          chapterId: chapterId,
+        },
+      });
+      if (progress.completed) {
+        throw new BadRequestException(
+          ' you have already completed chapter ' + chapterId,
+        );
+      }
+      if (progress) {
+        const updatedProgress = await this.prisma.chapterProgress.update({
+          where: {
+            id: progress.id,
+          },
+          data: {
+            completed: true,
+          },
+        });
+        return {
+          msg: ' you have successfully  completed ',
+          progress: updatedProgress,
+        };
+      } else {
+        return {
+          msg: ' no progress hae initialized by that user with that it ',
+        };
+      }
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
 }

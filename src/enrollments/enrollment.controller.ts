@@ -1,8 +1,11 @@
 import {
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
+  Patch,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -18,6 +21,7 @@ import { Roles } from 'src/decorator/mentor.decorator';
 import { GetUser } from 'src/decorator';
 import { User } from '@prisma/client';
 import { JwtGuard } from 'src/guard';
+import { MentorGuard } from 'src/guard/mentor.guard';
 
 @ApiTags('enrollment && progress tracking')
 @Controller('enrollment')
@@ -49,7 +53,7 @@ export class EnrollmentController {
     type: 'string',
   })
   // swagger
-
+  @ApiBearerAuth()
   // implementation
   @HttpCode(HttpStatus.OK)
   @Post('/enroll/:courseId')
@@ -57,5 +61,25 @@ export class EnrollmentController {
   @Roles('STUDENT')
   createEnroll(@GetUser() user: User, @Param('courseId') courseId: string) {
     return this.service.createEnroll(user, courseId);
+  }
+
+  @ApiBearerAuth()
+  // get all enrolled students on courses done by mentor
+  @UseGuards(JwtGuard, MentorGuard)
+  @Roles('MENTOR')
+  @Get('/enrolls/course/:courseId/students')
+  getAllEnrolledStudents(user: User, @Param('courseId') courseId: string) {
+    return this.service.getAllEnrolledStudents(user, courseId);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @Roles('STUDENT')
+  @Patch('/enrolls/course/updateProgress/:chapterId')
+  updateProgress(
+    @GetUser() user: User,
+    @Param('chapterId', ParseIntPipe) chapterId: number,
+  ) {
+    return this.service.updateProgressOrCreateIt(user, chapterId);
   }
 }
