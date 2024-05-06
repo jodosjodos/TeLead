@@ -102,7 +102,16 @@ export class UserService {
   }
 
   //  fill profile
-  async update(id: string, updateUserDto: FillUserDto, user: User) {
+  async update(
+    id: string,
+    updateUserDto: FillUserDto,
+    user: User,
+    file: Express.Multer.File,
+  ) {
+    const uploadResult = await this.cloudinaryService.uploadFile(
+      file,
+      user.email.replace('@gmail.com', ''),
+    );
     const savedUser = await this.prismaService.user.findUnique({
       where: { id: id.trim() },
     });
@@ -118,6 +127,7 @@ export class UserService {
         phoneNumber: updateUserDto.phoneNumber,
         gender: updateUserDto.gender,
         Role: updateUserDto.role,
+        profile: uploadResult.secure_url,
       },
     });
     return updatedUser;
@@ -187,33 +197,6 @@ export class UserService {
     return { user };
   }
 
-  // upload profile
-
-  async uploadProfile(file: Express.Multer.File, user: User) {
-    try {
-      // upload
-      const uploadResult = await this.cloudinaryService.uploadFile(
-        file,
-        user.email.replace('@gmail.com', ''),
-      );
-
-      // updated profile
-      const updatedUser = await this.prismaService.user.update({
-        where: {
-          id: user.id,
-          email: user.email,
-        },
-        data: {
-          profile: uploadResult.secure_url,
-        },
-      });
-      // return updated user
-      return updatedUser;
-    } catch (error) {
-      console.error('Error uploading file:', error);
-      throw error;
-    }
-  }
   //  get all enrolled course of user
 
   async getAllEnrolledCourses(user: User) {

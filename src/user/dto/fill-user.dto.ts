@@ -26,4 +26,7 @@ export class FillUserDto {
   @IsNotEmpty({ message: 'password role must be either MENTOR  or STUDENT' })
   @ApiProperty({ enum: ['MENTOR', 'STUDENT'] })
   role: 'MENTOR' | 'STUDENT';
+  @IsNotEmpty()
+  @ApiProperty()
+  file: any;
 }

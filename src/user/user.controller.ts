@@ -20,7 +20,6 @@ import { GetUser } from 'src/decorator';
 import { User } from '@prisma/client';
 import {
   CreateUserDto,
-  FileUploadDto,
   FillUserDto,
   ResetPasswordDTO,
   UpdateUserDto,
@@ -156,12 +155,25 @@ export class UserController {
   @UseGuards(JwtGuard)
   @Patch('update/:id')
   @ApiParam({ name: 'id', type: 'string', required: true })
+  @ApiConsumes('multipart/form-data')
   update(
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+
+        .addMaxSizeValidator({
+          maxSize: 5532403,
+        })
+
+        .build({
+          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+        }),
+    )
+    file: Express.Multer.File,
     @Param('id') id: string,
     @Body() updateUserDto: FillUserDto,
     @GetUser() user: User,
   ) {
-    return this.service.update(id, updateUserDto, user);
+    return this.service.update(id, updateUserDto, user, file);
   }
 
   // swagger
@@ -261,52 +273,6 @@ export class UserController {
   @UseGuards(JwtGuard)
   getAccountDetails(@GetUser() user: User, @Param('id') id: string) {
     return this.service.getAccountDetails(user, id);
-  }
-
-  // upload profile
-
-  // swagger conf
-
-  @ApiOperation({
-    summary: 'upload profile picture',
-    description:
-      ' upload profile picture of user and return user with updated profile',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'return user details with updated profile',
-  })
-  @ApiResponse({
-    status: HttpStatus.INTERNAL_SERVER_ERROR,
-    description: 'server error',
-  })
-  @ApiBearerAuth()
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    description: 'upload profile picture , make sure that file is image ',
-    type: FileUploadDto,
-    required: true,
-  })
-  // end swagger conf
-  @Patch('/upload/profile')
-  @UseGuards(JwtGuard)
-  @UseInterceptors(FileInterceptor('file'))
-  upload(
-    @UploadedFile(
-      new ParseFilePipeBuilder()
-
-        .addMaxSizeValidator({
-          maxSize: 5532403,
-        })
-
-        .build({
-          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-        }),
-    )
-    file: Express.Multer.File,
-    @GetUser() user: User,
-  ) {
-    return this.service.uploadProfile(file, user);
   }
 
   // get all  courses user have enrolled in
