@@ -4,25 +4,20 @@ import {
   Get,
   HttpStatus,
   Param,
-  Patch,
   Post,
   Query,
-  UploadedFile,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 import { Roles } from 'src/decorator/mentor.decorator';
 import { JwtGuard } from 'src/guard';
 import { MentorGuard } from 'src/guard/mentor.guard';
 import { CourseService } from './course.service';
-import { CreateChapterDto, CreateCourseDto, FilterDto } from './dto';
+import { CreateCourseDto, FilterDto } from './dto';
 import { GetUser } from 'src/decorator';
 import { Course, User } from '@prisma/client';
-import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
   ApiBody,
-  ApiConsumes,
   ApiOperation,
   ApiResponse,
   ApiTags,
