@@ -307,6 +307,30 @@ export class UserController {
     return this.service.uploadProfile(file, user);
   }
 
+  // get all  courses user have enrolled in
+  @ApiOperation({
+    summary: 'get  all courses user have enrolled in',
+    description: 'get all courses user have enrolled in',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'return all enrolled courses user have enrolled in',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'user must be student not mentor',
+  })
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+    description: 'server error',
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @Get('/courses')
+  getAllEnrolledCourses(@GetUser() user: User) {
+    return this.service.getAllEnrolledCourses(user);
+  }
+
   @ApiExcludeEndpoint()
   // delete account
   //TODO:not done yet

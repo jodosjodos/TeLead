@@ -210,4 +210,19 @@ export class UserService {
       throw new InternalServerErrorException(error);
     }
   }
+  //  get all enrolled course of user
+
+  async getAllEnrolledCourses(user: User) {
+    if (user.Role == 'MENTOR')
+      throw new BadRequestException('tis  is  only for  students');
+    const enrollments = await this.prismaService.enrollment.findMany({
+      where: {
+        studentId: user.id,
+      },
+      select: {
+        course: true,
+      },
+    });
+    return enrollments;
+  }
 }
