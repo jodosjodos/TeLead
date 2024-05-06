@@ -185,8 +185,8 @@ export class UserController {
   // end swagger
 
   // reset password request
-  @Get('/resetRequest/email')
-  resetPasswordRequest(@Body() email: VerifyUserDto) {
+  @Get('/resetRequest/:email')
+  resetPasswordRequest(@Param('email') email: VerifyUserDto) {
     return this.service.resetPasswordRequest(email);
   }
 
