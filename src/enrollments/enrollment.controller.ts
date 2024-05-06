@@ -117,8 +117,25 @@ export class EnrollmentController {
     return this.service.updateProgressOrCreateIt(user, chapterId);
   }
 
-  // get progress of student to course
+  // get progress of student to specific course
   @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'get progress of student to specific course',
+    description: ' gets progress of student to specific course',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: '  successfully',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description:
+      "invalid course  id or try to access course you haven't enrolled in",
+  })
+  @ApiParam({
+    name: 'courseId',
+    type: 'string',
+  })
   @UseGuards(JwtGuard)
   @Roles('STUDENT')
   @Get('/enrolls/course/getProgress/:courseId')
