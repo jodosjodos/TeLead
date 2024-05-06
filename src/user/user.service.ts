@@ -254,7 +254,7 @@ export class UserService {
         nickName: updateProfile.nickName,
         dateOfBirth: updateProfile.dateOfBirth,
         phoneNumber: updateProfile.phoneNumber,
-        profile: uploadedProfile.secure_url,
+        profile: file ? uploadedProfile.secure_url : uploadedProfile,
       },
     });
     return updatedProfile;
