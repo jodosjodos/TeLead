@@ -136,6 +136,7 @@ model ChapterProgress {
   userId       String
   completed    Boolean  @default(false)
   progress     Float    @default(0.0)
+  // not used
   lastAccessed DateTime @default(now())
   chapter      Chapter  @relation(references: [id], fields: [chapterId])
   user         User     @relation(references: [id], fields: [userId])
