@@ -1,7 +1,6 @@
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
 import { User } from '@prisma/client';
-import { VerifyUserDto } from 'src/user/dto';
 
 @Injectable()
 export class EmailService {
@@ -18,9 +17,9 @@ export class EmailService {
     });
   }
   // send confirmation email
-  async sendResetEmail(email: VerifyUserDto, user: User, resetLink: string) {
+  async sendResetEmail(email: string, user: User, resetLink: string) {
     await this.mailerService.sendMail({
-      to: email.email,
+      to: email,
       subject: 'Reset password',
       template: './resetPassword',
       context: {

@@ -22,7 +22,6 @@ import {
   FileUploadDto,
   ResetPasswordDTO,
   UpdateUserDto,
-  VerifyUserDto,
 } from './dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
@@ -168,7 +167,6 @@ export class UserController {
     summary: 'request reset password via email',
     description: 'send reset password url to your email you have provided',
   })
-  @ApiBody({ type: VerifyUserDto })
   @ApiResponse({
     status: 200,
     description: 'reset url have been sent to your email successfully',
@@ -186,7 +184,7 @@ export class UserController {
 
   // reset password request
   @Get('/resetRequest/:email')
-  resetPasswordRequest(@Param('email') email: VerifyUserDto) {
+  resetPasswordRequest(@Param('email') email: string) {
     return this.service.resetPasswordRequest(email);
   }
 

@@ -9,12 +9,7 @@ import { Gender, User } from '@prisma/client';
 import * as argon2 from 'argon2';
 // import * as AWS from 'aws-sdk';
 import { generateToken } from 'src/util/jwtutil';
-import {
-  CreateUserDto,
-  ResetPasswordDTO,
-  UpdateUserDto,
-  VerifyUserDto,
-} from './dto';
+import { CreateUserDto, ResetPasswordDTO, UpdateUserDto } from './dto';
 import { EmailService } from 'src/email/email.service';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
@@ -124,9 +119,9 @@ export class UserService {
   }
 
   // send reset password request to email
-  async resetPasswordRequest(email: VerifyUserDto) {
+  async resetPasswordRequest(email: string) {
     const user = await this.prismaService.user.findUnique({
-      where: { email: email.email },
+      where: { email: email },
     });
     if (!user) throw new BadRequestException(" user with email doesn't exists");
 
