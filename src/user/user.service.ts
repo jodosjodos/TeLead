@@ -1,7 +1,6 @@
 import {
   BadRequestException,
   Injectable,
-  InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
@@ -9,7 +8,12 @@ import { Gender, User } from '@prisma/client';
 import * as argon2 from 'argon2';
 // import * as AWS from 'aws-sdk';
 import { generateToken } from 'src/util/jwtutil';
-import { CreateUserDto, ResetPasswordDTO, UpdateUserDto } from './dto';
+import {
+  CreateUserDto,
+  FillUserDto,
+  ResetPasswordDTO,
+  UpdateUserDto,
+} from './dto';
 import { EmailService } from 'src/email/email.service';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
@@ -98,7 +102,7 @@ export class UserService {
   }
 
   //  fill profile
-  async update(id: string, updateUserDto: UpdateUserDto, user: User) {
+  async update(id: string, updateUserDto: FillUserDto, user: User) {
     const savedUser = await this.prismaService.user.findUnique({
       where: { id: id.trim() },
     });
@@ -207,7 +211,7 @@ export class UserService {
       return updatedUser;
     } catch (error) {
       console.error('Error uploading file:', error);
-      throw new InternalServerErrorException(error);
+      throw error;
     }
   }
   //  get all enrolled course of user
@@ -224,5 +228,31 @@ export class UserService {
       },
     });
     return enrollments;
+  }
+
+  //  update profile
+  async updateProfile(
+    user: User,
+    updateProfile: UpdateUserDto,
+    file: Express.Multer.File,
+  ) {
+    const uploadProfile = await this.cloudinaryService.uploadFile(
+      file,
+      user.email.replace('@gmail.com', ''),
+    );
+
+    const updatedProfile = await this.prismaService.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        fullName: updateProfile.fullName,
+        nickName: updateProfile.nickName,
+        dateOfBirth: updateProfile.dateOfBirth,
+        phoneNumber: updateProfile.phoneNumber,
+        profile: uploadProfile.secure_url,
+      },
+    });
+    return updatedProfile;
   }
 }

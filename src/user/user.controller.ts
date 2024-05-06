@@ -12,6 +12,7 @@ import {
   UseInterceptors,
   UploadedFile,
   ParseFilePipeBuilder,
+  Put,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { JwtGuard } from 'src/guard';
@@ -20,6 +21,7 @@ import { User } from '@prisma/client';
 import {
   CreateUserDto,
   FileUploadDto,
+  FillUserDto,
   ResetPasswordDTO,
   UpdateUserDto,
 } from './dto';
@@ -136,7 +138,7 @@ export class UserController {
     description:
       'updating user profile by overriding default ones and add your true identity ',
   })
-  @ApiBody({ type: UpdateUserDto })
+  @ApiBody({ type: FillUserDto })
   @ApiResponse({
     status: 200,
     description: 'user have been  successfully updated his profile',
@@ -156,7 +158,7 @@ export class UserController {
   @ApiParam({ name: 'id', type: 'string', required: true })
   update(
     @Param('id') id: string,
-    @Body() updateUserDto: UpdateUserDto,
+    @Body() updateUserDto: FillUserDto,
     @GetUser() user: User,
   ) {
     return this.service.update(id, updateUserDto, user);
@@ -330,7 +332,39 @@ export class UserController {
   getAllEnrolledCourses(@GetUser() user: User) {
     return this.service.getAllEnrolledCourses(user);
   }
-
+  @Put('/updateProfile')
+  @ApiConsumes('multipart/form-data')
+  @ApiOperation({
+    summary: 'update profile ',
+    description: 'update profile',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'user  have updated profile',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'invalid credentials or  invalid inputs',
+  })
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+    description: 'server error',
+  })
+  @ApiBody({
+    description: 'upload profile picture , make sure that file is image ',
+    type: UpdateUserDto,
+    required: true,
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @UseInterceptors(FileInterceptor('file'))
+  updateProfile(
+    @GetUser() user: User,
+    @Body() updateProfile: UpdateUserDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.service.updateProfile(user, updateProfile, file);
+  }
   @ApiExcludeEndpoint()
   // delete account
   //TODO:not done yet
