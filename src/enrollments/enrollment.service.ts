@@ -11,6 +11,9 @@ export class EnrollmentService {
   constructor(private readonly prisma: DatabaseService) {}
   async createEnroll(user: User, courseId: string) {
     try {
+      if (user.Role != 'STUDENT') {
+        throw new BadRequestException(' only student can enroll to courses');
+      }
       const course = await this.prisma.course.findUnique({
         where: {
           id: courseId,
@@ -18,6 +21,10 @@ export class EnrollmentService {
       });
       if (!course)
         throw new BadRequestException(' course with that id not found');
+      // if (course.paid == 'PAID') {
+      //   //TODO: implement stripe for payable course
+      //   throw new BadRequestException(' course is paid');
+      // }
       const alreadyEnrolled = await this.prisma.enrollment.findFirst({
         where: {
           courseId: course.id,
@@ -121,5 +128,41 @@ export class EnrollmentService {
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
+  }
+  async getProgressOfStudent(user: User, courseId: string) {
+    if (user.Role == 'MENTOR') {
+      throw new BadRequestException(' this  is only for students');
+    }
+    const courseChapters = await this.prisma.course.findUnique({
+      where: {
+        id: courseId.trim(),
+      },
+      select: {
+        chapters: {
+          select: {
+            id: true,
+            name: true,
+            desc: true,
+            chapterProgress: {
+              where: {
+                userId: user.id,
+              },
+              select: {
+                completed: true,
+                progress: true,
+                lastAccessed: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    if (!courseChapters) {
+      throw new BadRequestException(' no course with that id ');
+    }
+    return {
+      msg: 'success return students progress',
+      courseChapters: courseChapters,
+    };
   }
 }

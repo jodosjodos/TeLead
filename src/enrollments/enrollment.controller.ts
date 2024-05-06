@@ -64,6 +64,22 @@ export class EnrollmentController {
   }
 
   @ApiBearerAuth()
+  @ApiOperation({
+    summary: ' get all Enrolled  students to course',
+    description: ' get all students enrolled to  your course ',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: '  successfully',
+  })
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+    description: 'server error',
+  })
+  @ApiParam({
+    name: 'courseId',
+    type: 'string',
+  })
   // get all enrolled students on courses done by mentor
   @UseGuards(JwtGuard, MentorGuard)
   @Roles('MENTOR')
@@ -73,6 +89,24 @@ export class EnrollmentController {
   }
 
   @ApiBearerAuth()
+  @ApiOperation({
+    summary: ' make student complete chapter',
+    description: ' make student complete chapter',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: '  successfully',
+  })
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+    description: 'server error',
+  })
+  @ApiParam({
+    name: 'chapterId',
+    type: 'string',
+  })
+
+  //  keep track of  the completed chapters
   @UseGuards(JwtGuard)
   @Roles('STUDENT')
   @Patch('/enrolls/course/updateProgress/:chapterId')
@@ -81,5 +115,14 @@ export class EnrollmentController {
     @Param('chapterId', ParseIntPipe) chapterId: number,
   ) {
     return this.service.updateProgressOrCreateIt(user, chapterId);
+  }
+
+  // get progress of student to course
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @Roles('STUDENT')
+  @Get('/enrolls/course/getProgress/:courseId')
+  getProgress(@GetUser() user: User, @Param('courseId') courseId: string) {
+    return this.service.getProgressOfStudent(user, courseId);
   }
 }

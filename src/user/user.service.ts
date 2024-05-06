@@ -55,7 +55,7 @@ export class UserService {
   // verify user profile
   async verifyUser(id: string, email: string): Promise<{ msg: string }> {
     const user = await this.prismaService.user.findUnique({
-      where: { id, email },
+      where: { id: id.trim(), email: email.trim() },
     });
     if (!user) throw new BadRequestException('non-match email  and id');
     if (user.isVerified)
@@ -100,8 +100,9 @@ export class UserService {
   //  fill profile
   async update(id: string, updateUserDto: UpdateUserDto, user: User) {
     const savedUser = await this.prismaService.user.findUnique({
-      where: { id },
+      where: { id: id.trim() },
     });
+
     if (!savedUser) throw new BadRequestException('please provide valid id');
     if (id !== user.id) throw new BadRequestException(' that is not your id ');
     const updatedUser = await this.prismaService.user.update({
