@@ -58,7 +58,9 @@ export class UserController {
     description: ' this is endpoint to register user to TeLead',
   })
   @ApiBody({ type: CreateUserDto })
+  @HttpCode(HttpStatus.CREATED)
   create(@Body() createUserDto: CreateUserDto) {
+    console.log('creating user reaching out');
     return this.service.create(createUserDto);
   }
 
