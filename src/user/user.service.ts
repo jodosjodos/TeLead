@@ -207,8 +207,6 @@ export class UserService {
     user: User,
     passwords: ResetPasswordDTO,
   ): Promise<{ msg: string; loginUrl: string }> {
-    console.log(passwords);
-
     const available = await this.prismaService.user.findUnique({
       where: { id: user.id, email: user.email },
     });
@@ -222,6 +220,14 @@ export class UserService {
     if (!(passwords.password === passwords.confirmPassword))
       throw new BadRequestException(' passwords are not match');
     const hashedPassword = await argon2.hash(passwords.password);
+    const isCurrentPassword = await argon2.verify(
+      available.password,
+      passwords.password,
+    );
+    if (isCurrentPassword)
+      throw new BadRequestException(
+        'that is your current password, please choose another password',
+      );
     await this.prismaService.user.update({
       where: { id: user.id, email: user.email },
       data: {
