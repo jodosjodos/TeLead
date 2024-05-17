@@ -101,7 +101,7 @@ export class UserController {
   @ApiOperation({
     summary: 'verify account',
     description:
-      'verify user account using user id and email , the verification url sent to user during creation ',
+      'verify user account using user id and email , the verification url sent to user during creati  on ',
   })
   @ApiParam({ name: 'id', type: 'string' })
   @ApiParam({
