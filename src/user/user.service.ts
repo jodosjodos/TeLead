@@ -49,6 +49,7 @@ export class UserService {
         nickName: 'John',
         dateOfBirth: defaultDateOfBirth,
         gender: Gender.MALE,
+        isVerified: true,
       },
     });
 
