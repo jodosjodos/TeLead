@@ -24,7 +24,9 @@ export class UserService {
     private readonly emailService: EmailService,
     private readonly cloudinaryService: CloudinaryService,
   ) {}
-  async create(createUserDto: CreateUserDto): Promise<User> {
+  async create(
+    createUserDto: CreateUserDto,
+  ): Promise<{ user: User; token: string }> {
     const user = await this.prismaService.user.findUnique({
       where: { email: createUserDto.email },
     });
@@ -53,7 +55,9 @@ export class UserService {
     // send email for verify user
     const confirmUrl = `http://localhost:4000/api/v1/user/verify/${savedUser.id}/${savedUser.email}`;
     await this.emailService.sendEmail(confirmUrl, savedUser);
-    return savedUser;
+    const token = await generateToken(savedUser.email, savedUser.id);
+
+    return { user: savedUser, token };
   }
 
   // verify user profile

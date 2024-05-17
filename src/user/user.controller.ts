@@ -158,6 +158,7 @@ export class UserController {
   @ApiBearerAuth()
   @UseGuards(JwtGuard)
   @UseInterceptors(FileInterceptor('file'))
+  @HttpCode(HttpStatus.OK)
   fillProfile(
     @GetUser() user: User,
     @Body() fillProfile: FillUserDto,
