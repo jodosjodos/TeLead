@@ -163,7 +163,7 @@ export class UserService {
     });
 
     if (!otpEntry) {
-      throw new BadRequestException('OTP not found');
+      throw new BadRequestException('invalid OTP');
     }
 
     // Calculate the expiration time by adding 5 minutes to the createdAt time
