@@ -60,7 +60,6 @@ export class UserController {
   @ApiBody({ type: CreateUserDto })
   @HttpCode(HttpStatus.CREATED)
   create(@Body() createUserDto: CreateUserDto) {
-    console.log('creating user reaching out');
     return this.service.create(createUserDto);
   }
 
@@ -94,40 +93,6 @@ export class UserController {
     @Body() loginUserDto: CreateUserDto,
   ): Promise<{ user: User; token: string }> {
     return this.service.login(loginUserDto);
-  }
-
-  // verify account
-  //swagger
-  @ApiOperation({
-    summary: 'verify account',
-    description:
-      'verify user account using user id and email , the verification url sent to user during creati  on ',
-  })
-  @ApiParam({ name: 'id', type: 'string' })
-  @ApiParam({
-    name: 'email',
-    type: 'string',
-    description: 'email of the user',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'user have been verified successfully',
-  })
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    description: 'user is already verified or  non-match email and id',
-  })
-  @ApiResponse({
-    status: HttpStatus.INTERNAL_SERVER_ERROR,
-    description: 'server error',
-  })
-  // swagger
-  @Get('verify/:id/:email')
-  verify(
-    @Param('id') id: string,
-    @Param('email') email: string,
-  ): Promise<{ msg: string }> {
-    return this.service.verifyUser(id, email);
   }
 
   // fillProfile
@@ -165,19 +130,17 @@ export class UserController {
     @UploadedFile() file: Express.Multer.File,
     @Param('id') userId: string,
   ) {
-    console.log(file);
-
     return this.service.update(userId, fillProfile, user, file);
   }
 
   // swagger
   @ApiOperation({
     summary: 'request reset password via email',
-    description: 'send reset password url to your email you have provided',
+    description: 'send reset  otp validation',
   })
   @ApiResponse({
     status: 200,
-    description: 'reset url have been sent to your email successfully',
+    description: 'reset  otp have been sent',
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
@@ -198,25 +161,23 @@ export class UserController {
 
   // swagger
   @ApiOperation({
-    summary: 'reset password ',
-    description:
-      'user provide new password and confirmPassword so that we can update his password ',
+    summary: 'verify OTP ',
+    description: 'user  verify OTP based on one he has received on   email',
   })
-  @ApiParam({ name: 'id', type: 'string' })
   @ApiParam({
     name: 'email',
     type: 'string',
     description: 'email of the user',
   })
-  @ApiBody({ type: ResetPasswordDTO })
+  @ApiParam({ name: 'otp', type: 'string', description: 'received otp ' })
   @ApiResponse({
     status: 200,
-    description: 'password have been updated successfully',
+    description: ' otp validation successfully',
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
     description:
-      'please provide valid id and email you have received on email or confirm password and password not match',
+      'please provide valid otp and email you have received on email or confirm password and password not match',
   })
   @ApiResponse({
     status: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -224,7 +185,10 @@ export class UserController {
   })
   @ApiBearerAuth()
   //end swagger
-
+  @Get('/reset/verify/otp/:email/:otp')
+  verifyOTP(@Param('email') email: string, @Param('otp') otp: string) {
+    return this.service.verifyOTP(otp, email);
+  }
   // reset password
   @Patch('/reset/email/:id/:email')
   resetPassword(

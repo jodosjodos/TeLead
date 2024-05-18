@@ -17,14 +17,14 @@ export class EmailService {
     });
   }
   // send confirmation email
-  async sendResetEmail(email: string, user: User, resetLink: string) {
+  async sendResetEmail(email: string, user: User, otp: string) {
     await this.mailerService.sendMail({
       to: email,
       subject: 'Reset password',
       template: './resetPassword',
       context: {
         name: user.fullName,
-        resetLink,
+        otp,
       },
     });
   }

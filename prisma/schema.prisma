@@ -13,7 +13,6 @@ datasource db {
 enum Gender {
   MALE
 
-  
   FEMALE
 }
 
@@ -131,7 +130,7 @@ model Enrollment {
 }
 
 model ChapterProgress {
-  id Int @id @default(autoincrement())
+  id           Int      @id @default(autoincrement())
   chapterId    Int
   userId       String
   completed    Boolean  @default(false)
@@ -143,4 +142,12 @@ model ChapterProgress {
 
   @@index([chapterId])
   @@index([userId])
+}
+
+model OTP {
+  id        Int      @id @default(autoincrement())
+  otp       String
+  email     String
+  createdAt DateTime @default(now())
+    @@map("otp")
 }

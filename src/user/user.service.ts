@@ -6,6 +6,7 @@ import {
 import { DatabaseService } from 'src/database/database.service';
 import { Gender, User } from '@prisma/client';
 import * as argon2 from 'argon2';
+import * as otpGen from 'otp-generator';
 // import * as AWS from 'aws-sdk';
 import { generateToken } from 'src/util/jwtutil';
 import {
@@ -59,28 +60,6 @@ export class UserService {
     const token = await generateToken(savedUser.email, savedUser.id);
 
     return { user: savedUser, token };
-  }
-
-  // verify user profile
-  async verifyUser(id: string, email: string): Promise<{ msg: string }> {
-    const user = await this.prismaService.user.findUnique({
-      where: { id: id.trim(), email: email.trim() },
-    });
-    if (!user) throw new BadRequestException('non-match email  and id');
-    if (user.isVerified)
-      throw new BadRequestException(
-        ' user with that id have been already verified',
-      );
-    await this.prismaService.user.update({
-      where: { id },
-      data: {
-        isVerified: true,
-      },
-    });
-
-    return {
-      msg: ' you have verified your email now you can use your account',
-    };
   }
 
   // login user
@@ -141,15 +120,67 @@ export class UserService {
   // send reset password request to email
   async resetPasswordRequest(email: string) {
     const user = await this.prismaService.user.findUnique({
-      where: { email: email },
+      where: { email: email.trim() },
     });
     if (!user) throw new BadRequestException(" user with email doesn't exists");
 
-    const resetLink = `http://localhost:4000/api/v1/user/reset/email/${user.id}/${user.email}`;
+    const otp = await otpGen.generate(4, {
+      digits: true,
+      upperCaseAlphabets: false,
+      specialChars: false,
+      lowerCaseAlphabets: false,
+    });
 
-    await this.emailService.sendResetEmail(email, user, resetLink);
+    await this.emailService.sendResetEmail(email, user, otp);
+    await this.prismaService.oTP.create({
+      data: {
+        email: email.trim(),
+        otp: otp.trim(),
+      },
+    });
     return {
       msg: ' you have requested to reset your password , please check your email',
+    };
+  }
+
+  // verify otp
+  async verifyOTP(
+    otp: string,
+    email: string,
+  ): Promise<{ msg: string; token: string }> {
+    const otpEntry = await this.prismaService.oTP.findFirst({
+      where: {
+        email: email.trim(),
+        otp: otp.trim(),
+      },
+    });
+
+    if (!otpEntry) {
+      return {
+        msg: ' OTP not  valid',
+        token: null,
+      }; // OTP not found
+    }
+
+    const isValid = otpEntry.otp === otp;
+
+    if (isValid) {
+      await this.prismaService.oTP.delete({
+        where: {
+          id: otpEntry.id,
+        },
+      });
+    }
+    const user = await this.prismaService.user.findUnique({
+      where: {
+        email,
+      },
+    });
+    const token = await generateToken(user.email, user.id);
+
+    return {
+      msg: ' your otp is verified ',
+      token,
     };
   }
 
