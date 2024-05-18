@@ -148,8 +148,8 @@ export class UserService {
   async verifyOTP(
     otp: string,
     email: string,
-  ): Promise<{ msg: string; token: string }> {
-    const otpEntry = await this.prismaService.oTP.findFirst({
+  ): Promise<{ msg: string; token?: string; userId?: string }> {
+    const otpEntry = await this.prismaService.oTP.findFirstOrThrow({
       where: {
         email: email.trim(),
         otp: otp.trim(),
@@ -172,7 +172,6 @@ export class UserService {
       if (isExpired) {
         return {
           msg: 'OTP has expired',
-          token: null,
         }; // OTP expired
       }
       await this.prismaService.oTP.delete({
@@ -191,6 +190,7 @@ export class UserService {
     return {
       msg: ' your otp is verified ',
       token,
+      userId: user.id,
     };
   }
 
