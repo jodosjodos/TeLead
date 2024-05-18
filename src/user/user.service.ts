@@ -7,7 +7,6 @@ import { DatabaseService } from 'src/database/database.service';
 import { Gender, User } from '@prisma/client';
 import * as argon2 from 'argon2';
 import * as otpGen from 'otp-generator';
-import { addMinutes, isBefore } from 'date-fns';
 // import * as AWS from 'aws-sdk';
 import { generateToken } from 'src/util/jwtutil';
 import {
@@ -133,10 +132,16 @@ export class UserService {
     });
 
     await this.emailService.sendResetEmail(email, user, otp);
+    await this.prismaService.oTP.deleteMany({
+      where: {
+        email,
+      },
+    });
     await this.prismaService.oTP.create({
       data: {
         email: email.trim(),
         otp: otp.trim(),
+        createdAt: new Date(),
       },
     });
     return {
@@ -145,11 +150,12 @@ export class UserService {
   }
 
   // verify otp
+
   async verifyOTP(
     otp: string,
     email: string,
   ): Promise<{ msg: string; token?: string; userId?: string }> {
-    const otpEntry = await this.prismaService.oTP.findFirstOrThrow({
+    const otpEntry = await this.prismaService.oTP.findFirst({
       where: {
         email: email.trim(),
         otp: otp.trim(),
@@ -157,43 +163,45 @@ export class UserService {
     });
 
     if (!otpEntry) {
-      return {
-        msg: ' OTP not  valid',
-        token: null,
-      }; // OTP not found
+      throw new BadRequestException('OTP not found');
     }
 
-    const isValid = otpEntry.otp === otp;
+    // Calculate the expiration time by adding 5 minutes to the createdAt time
+    const expirationTime = new Date(otpEntry.createdAt.getTime() + 5 * 60000);
+    const currentTime = new Date();
 
-    if (isValid) {
-      const expirationTime = addMinutes(otpEntry.createdAt, 5);
-      const isExpired = isBefore(new Date(), expirationTime);
-
-      if (isExpired) {
-        return {
-          msg: 'OTP has expired',
-        }; // OTP expired
-      }
-      await this.prismaService.oTP.delete({
-        where: {
-          id: otpEntry.id,
-        },
-      });
+    if (currentTime > expirationTime) {
+      throw new BadRequestException('OTP has expired');
     }
+
+    await this.deleteOTPEntry(otpEntry.id);
+
     const user = await this.prismaService.user.findUnique({
       where: {
         email,
       },
     });
+
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
     const token = await generateToken(user.email, user.id);
 
     return {
-      msg: ' your otp is verified ',
+      msg: 'Your OTP is verified',
       token,
       userId: user.id,
     };
   }
 
+  private async deleteOTPEntry(id: number): Promise<void> {
+    await this.prismaService.oTP.delete({
+      where: {
+        id,
+      },
+    });
+  }
   // reset password by email
   async resetPasswordEmail(
     user: User,
