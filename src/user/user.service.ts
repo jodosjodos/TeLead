@@ -7,6 +7,7 @@ import { DatabaseService } from 'src/database/database.service';
 import { Gender, User } from '@prisma/client';
 import * as argon2 from 'argon2';
 import * as otpGen from 'otp-generator';
+import { addMinutes, isBefore } from 'date-fns';
 // import * as AWS from 'aws-sdk';
 import { generateToken } from 'src/util/jwtutil';
 import {
@@ -165,6 +166,15 @@ export class UserService {
     const isValid = otpEntry.otp === otp;
 
     if (isValid) {
+      const expirationTime = addMinutes(otpEntry.createdAt, 5);
+      const isExpired = isBefore(new Date(), expirationTime);
+
+      if (isExpired) {
+        return {
+          msg: 'OTP has expired',
+          token: null,
+        }; // OTP expired
+      }
       await this.prismaService.oTP.delete({
         where: {
           id: otpEntry.id,
@@ -186,17 +196,16 @@ export class UserService {
 
   // reset password by email
   async resetPasswordEmail(
-    email: string,
-    id: string,
+    user: User,
     passwords: ResetPasswordDTO,
   ): Promise<{ msg: string; loginUrl: string }> {
     console.log(passwords);
 
-    const user = await this.prismaService.user.findUnique({
-      where: { id, email },
+    const available = await this.prismaService.user.findUnique({
+      where: { id: user.id, email: user.email },
     });
     //  check is user is truly him
-    if (!user)
+    if (!available)
       throw new UnauthorizedException(
         'please provide valid id and email you have received on email',
       );
@@ -206,7 +215,7 @@ export class UserService {
       throw new BadRequestException(' passwords are not match');
     const hashedPassword = await argon2.hash(passwords.password);
     await this.prismaService.user.update({
-      where: { id, email },
+      where: { id: user.id, email: user.email },
       data: {
         password: hashedPassword,
       },

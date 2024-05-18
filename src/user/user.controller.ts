@@ -150,7 +150,6 @@ export class UserController {
     status: HttpStatus.INTERNAL_SERVER_ERROR,
     description: 'server error',
   })
-  @ApiBearerAuth()
   // end swagger
 
   // reset password request
@@ -183,20 +182,21 @@ export class UserController {
     status: HttpStatus.INTERNAL_SERVER_ERROR,
     description: 'server error',
   })
-  @ApiBearerAuth()
   //end swagger
   @Get('/reset/verify/otp/:email/:otp')
   verifyOTP(@Param('email') email: string, @Param('otp') otp: string) {
     return this.service.verifyOTP(otp, email);
   }
+
   // reset password
-  @Patch('/reset/email/:id/:email')
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @Patch('/reset/newPasswords')
   resetPassword(
-    @Param('email') email: string,
-    @Param('id') id: string,
+    @GetUser() user: User,
     @Body() passwords: ResetPasswordDTO,
   ): Promise<{ msg: string; loginUrl: string }> {
-    return this.service.resetPasswordEmail(email, id, passwords);
+    return this.service.resetPasswordEmail(user, passwords);
   }
 
   // account details
