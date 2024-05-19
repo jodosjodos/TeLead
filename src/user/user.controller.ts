@@ -133,6 +133,7 @@ export class UserController {
     return this.service.update(userId, fillProfile, user, file);
   }
 
+  // send reset OTP
   // swagger
   @ApiOperation({
     summary: 'request reset password via email',
