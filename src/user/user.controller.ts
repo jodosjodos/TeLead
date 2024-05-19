@@ -158,6 +158,7 @@ export class UserController {
     return this.service.resetPasswordRequest(email);
   }
 
+  // verify OTP
   // swagger
   @ApiOperation({
     summary: 'verify OTP ',
