@@ -176,7 +176,7 @@ export class UserController {
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
     description:
-      'please provide valid otp and email you have received on email or confirm password and password not match',
+      'please provide valid otp and email you have received on email ',
   })
   @ApiResponse({
     status: HttpStatus.INTERNAL_SERVER_ERROR,
