@@ -221,7 +221,7 @@ export class UserService {
       throw new BadRequestException(' passwords are not match');
     const hashedPassword = await argon2.hash(passwords.password);
 
-    //  chekc if  he provided already password  he use
+    //  check if  he provided already password  he use
     const isCurrentPassword = await argon2.verify(
       available.password,
       passwords.password,
