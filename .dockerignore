@@ -1,0 +1,24 @@
+# Ignore version control files
+.git
+
+# Ignore node_modules and dependencies
+node_modules/
+
+# Ignore logs and temp files
+*.log
+*.tmp
+*.swp
+.DS_Store
+Thumbs.db
+
+# Ignore build artifacts
+dist/
+build/
+
+# Ignore local environment files
+.env
+.env.local
+
+# Ignore editor/IDE configurations
+.vscode/
+.idea/
