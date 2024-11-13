@@ -11,7 +11,7 @@ async function bootstrap() {
   app.useGlobalFilters(new AllExceptionFilter(httpAdapter));
   app.setGlobalPrefix('api/v1');
   app.enableCors();
-  const port = 4000;
+  const port = 3000;
 
   // Swagger configuration
   const config = new DocumentBuilder()
@@ -28,12 +28,11 @@ async function bootstrap() {
     })
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('swagger', app, document);
+  SwaggerModule.setup('api/v1/swagger', app, document);
 
   await app.listen(port, () => {
-    console.log(`Your app is running on port ${port}`);
+    console.log(`Your app is running on port ${port} successfully `);
   });
 }
 
-// TODO: implementing stripes
 bootstrap();

@@ -1,48 +1,48 @@
-version: '3.0'
 services:
   nest-app:
     build: .
+    container_name: nestjs-app
     ports:
-     - '8085:8085'
+      - '3000:3000'
     volumes:
-     - .:/app
-    command: npm run start:prod
+      - .:/app
     depends_on:
       - db
     networks:
       - nest-net
     environment:
-     - DATABASE_URL=${DATABASE_URL}
-     - MAIL_HOST=${MAIL_HOST}
-     - MAIL_PORT=${MAIL_PORT}
-     - SMTP_USERNAME= ${SMTP_USERNAME}
-     - SMTP_PASSWORD=${SMTP_PASSWORD}
-     - JWT_SECRET=${JWT_SECRET}
-     - PORT=${PORT}
-     - CLOUDINARY_NAME=${CLOUDINARY_NAME}
-     - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
-     - CLOUDINARY_SECRET=${CLOUDINARY_SECRET}
-     - TWILIO_ACCOUNT_SID=${TWILIO_ACCOUNT_SID}
-     - TWILIO_ACCOUNT_AUTH_TOKEN=${TWILIO_ACCOUNT_AUTH_TOKEN}
-     - TWILIO_SERVICE_SID=${TWILIO_SERVICE_SID}
-     - TWILIO_EMAIL_TEMPLATE_ID=${TWILIO_EMAIL_TEMPLATE_ID}
-     - SENDGRID_API_KEY=${SENDGRID_API_KEY}
-     - TWILIO_SENDER_PHONE_NUMBER=${TWILIO_SENDER_PHONE_NUMBER}
+      - DATABASE_URL=${DATABASE_URL}
+      - MAIL_HOST=${MAIL_HOST}
+      - MAIL_PORT=${MAIL_PORT}
+      - SMTP_USERNAME=${SMTP_USERNAME}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - PORT=${PORT}
+      - CLOUDINARY_NAME=${CLOUDINARY_NAME}
+      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
+      - CLOUDINARY_SECRET=${CLOUDINARY_SECRET_KEY}
+      - TWILIO_ACCOUNT_SID=${TWILIO_ACCOUNT_SID}
+      - TWILIO_ACCOUNT_AUTH_TOKEN=${TWILIO_ACCOUNT_AUTH_TOKEN}
+      - TWILIO_SERVICE_SID=${TWILIO_SERVICE_SID}
+      - TWILIO_EMAIL_TEMPLATE_ID=${TWILIO_EMAIL_TEMPLATE_ID}
+      - SENDGRID_API_KEY=${SENDGRID_API_KEY}
+      - TWILIO_SENDER_PHONE_NUMBER=${TWILIO_SENDER_PHONE_NUMBER}
   db:
+    image: postgres:16
     container_name: database
-    image: postgres:alpine
+    restart: always
     ports:
-      - '5555:5555'
+      - '5555:5432'
     environment:
-     - POSTGRES_PASSWORD=${DB_PASSWORD}
-     - POSTGRES_USER=${DB_USERNAME}
-     - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_DB=${DB_NAME}
     volumes:
       - db-data:/var/lib/postgresql/data
     networks:
       - nest-net
 networks:
   nest-net:
-   driver: bridge
+    driver: bridge
 volumes:
   db-data:
