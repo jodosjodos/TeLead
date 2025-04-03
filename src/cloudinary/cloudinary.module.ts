@@ -4,7 +4,7 @@ import { cloudinaryProvider } from './cloudinary.provider'; // Import the provid
 
 @Global()
 @Module({
-  providers: [CloudinaryService, cloudinaryProvider], // Use the imported provider
+  providers: [CloudinaryService, cloudinaryProvider],
   exports: [CloudinaryService, cloudinaryProvider],
 })
 export class CloudinaryModule {}

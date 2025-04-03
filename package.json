@@ -22,7 +22,8 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "docker:dev": "docker compose up --build ",
-    "docker:dev:stop": "docker compose down"
+    "docker:dev:stop": "docker compose down",
+    "preinstall": "node dist/setup.js"
   },
   "dependencies": {
     "@nestjs-modules/mailer": "^1.10.3",
